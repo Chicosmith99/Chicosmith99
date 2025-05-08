@@ -1,0 +1,137 @@
+Technical Specification Document
+
+Project Title: COJIM Social Media Security Extension (Private Use)
+
+Client: Christopher Orji Ministries (COJIM)
+
+Target Platforms:
+
+* YouTube Channel: [https://www.youtube.com/@christopherorjiministriescojim](https://www.youtube.com/@christopherorjiministriescojim)
+* Facebook Page: [https://www.facebook.com/ChristopherOrjiMinistriesCOJIM](https://www.facebook.com/ChristopherOrjiMinistriesCOJIM)
+
+
+
+ Objective
+
+To develop a private-use browser extension that provides military-grade security monitoring for COJIM's social media accounts. The extension will focus on real-time comment scanning, spam and scam detection, account tracing, and automated reporting across YouTube and Facebook platforms.
+
+
+ Core Features
+
+1. Account Security Monitoring
+
+* Always-active background process to ensure the integrity of the social media sessions.
+* Alerts if any unauthorized access or suspicious behavior is detected.
+* Encrypted local storage and secure transmission for any stored or sent data.
+
+2. Comment Scanning & Moderation
+
+* Real-time scanning of comments on:
+
+  * YouTube livestreams
+  * Uploaded YouTube videos
+  * Facebook posts and livestreams
+* Detection criteria:
+
+  * Spam messages
+  * Scam content (e.g., donation fraud, impersonation)
+  * Financial solicitation
+  * Unofficial external links
+  * Flagged keywords or phrases (customizable)
+
+3. Automated Reporting & Admin Dashboard
+
+* When a comment is flagged, an auto-report will be generated and stored within the extension's secure internal dashboard.
+* The extension will include a private dashboard accessible only to the admin (Me), allowing you to:
+
+  * View all flagged comments
+  * Sort/filter comments by platform, timestamp, and reason for flagging
+  * Review comment metadata (text, source account, timestamp)
+* Each flagged comment will have a 24-Hours countdown timer.
+
+  * If not reviewed within this period, the comment entry will be automatically deleted permanently from the dashboard.
+
+4. Account Traceability (if possible)
+
+* Attempt to gather and log traceable metadata:
+
+  * Username
+  * Profile link
+  * Account ID
+  * Account creation data (if accessible)
+
+5. User Interface (UI)
+
+* Clean, professional design
+* Tab-based layout with the following sections:
+
+ a. Dashboard
+
+* Summary of activity
+* Latest flagged comments with countdowns
+
+ b. Whitelist Manager
+
+* Add/manage allowed domains/URLs
+* Prevent false positives
+
+ c. Flagged Content Log
+
+* Full log of flagged comments
+* Filter by platform, reason, or date
+
+ d. Keyword/Phrase Watchlist
+
+* Editable list of flagged terms
+* Add/remove custom phrases
+
+ e. Platform Tabs
+
+* Separate tabs for:
+
+  * YouTube analysis
+  * Facebook analysis
+* Easier filtering and navigation
+
+ f. Reports
+
+* Log of reports stored in admin dashboard
+* Export options (CSV, PDF)
+
+
+
+ Technical Requirements
+
+ Browser Compatibility
+
+* Target: Firefox (Primary)
+* Optional Future Support: Chrome/Edge
+
+ Technologies
+
+* JavaScript (ES6+)
+* HTML5/CSS3 (for UI)
+* WebExtension APIs (Firefox/Chrome)
+* Secure Local Storage (IndexedDB or similar)
+* Facebook Graph API & YouTube Data API v3
+
+ Security
+
+* Use HTTPS for all external requests
+* AES-256 encryption for local data (if needed)
+* OAuth2 for authenticated API access (YouTube/Facebook)
+
+
+ Future Features (Phase 2)
+
+* Admin response system to flagged users
+* Browser push notifications
+* Multi-admin management & roles
+
+
+
+ Notes
+
+* This extension is strictly for private use within COJIM's digital management team.
+* No public publishing or commercial distribution intended.
+

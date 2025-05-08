@@ -1,0 +1,215 @@
+Script Brief – Custom Browser Extension for Private Social Media Security Use For COJIM.
+
+I want to build a private browser extension designed specifically to help monitor and secure the official social media accounts of Christopher Orji Ministries:
+
+* YouTube Channel: [Christopher Orji Ministries - COJIM](https://www.youtube.com/@christopherorjiministriescojim)
+* Facebook Page: [Christopher Orji Ministries - COJIM](https://www.facebook.com/ChristopherOrjiMinistriesCOJIM)
+
+ Primary Goals
+
+1. Military-Grade Account Security Monitoring
+   The extension should constantly monitor both YouTube and Facebook environments, ensuring the integrity and safety of the ministry’s accounts.
+
+2. Comment Moderation & Spam Detection
+
+    Automatically scan and flag spam, scam messages, phishing attempts, and inappropriate content in the comment sections of:
+
+     * Facebook posts
+     * YouTube videos (both live streams and pre-uploaded content)
+   * Special attention should be given to:
+
+     * Comments with unofficial external links
+     * Financial solicitation (e.g. people asking for help or giving fake donation info)
+     * Impersonation or misleading accounts
+   * Flagged comments should:
+
+     * Be stored in a secure internal database
+     * Notify the admin immediately
+     * If possible, trace and record the source account details
+
+3. Automated Reporting System
+
+   * When a comment is flagged, an auto-report should be generated and sent:
+
+     * To the YouTube admin dashboard
+     * To the Facebook page admin inbox
+   * Reports must include:
+
+     * Comment text
+     * Source account (username + profile link, if available)
+     * Timestamp
+     * Reason for flagging
+
+4. Extension UI Design
+
+   * Professional, clean, and intuitive interface
+   * Tabs should include:
+
+     * Whitelist Manager: for domains/links approved by the ministry
+     * Flagged Content Log: showing all flagged comments, source accounts, platform, and timestamps
+     * Word/Phrase Monitor: editable list of terms that trigger moderation
+     * Facebook vs. YouTube Tabs: for platform-specific data and quick comparison
+     * Report Summary: overview of reports generated and submitted
+
+5. Always-On Monitoring
+
+   * The extension must be active at all times, automatically scanning:
+
+     * Livestream comment sections
+     * Comments on already-uploaded videos/posts
+     * New comments as they appear in real-time.
+
+Project Plan.
+
+Since Firefox extensions can’t directly access Facebook and YouTube content in the way native APIs can, the strategy will involve:
+
+Content script injection to scan comments.
+
+Custom logic to detect spam, scams, and prohibited links.
+
+Background script to coordinate data storage, notifications, and reporting.
+
+Popup UI with tabs for:
+
+Whitelisted domains
+
+Flagged comments & accounts
+
+Reports
+
+Platform-specific views (YouTube/Facebook)
+
+✅ Here's a Starter Breakdown
+I will provide the following files for your extension:
+
+manifest.json – Defines the extension and permissions
+
+background.js – Manages flagging/reporting
+
+contentScript.js – Scans comment sections
+
+popup.html – UI skeleton
+
+popup.js – Handles UI logic
+
+storage.js – For managing flagged data
+
+icons/ – Folder for your extension icon
+
+🔐 Security & Detection Enhancements
+Feature	Description
+Heuristic-based spam detection	Use pattern matching (e.g. "WhatsApp me", "send money", etc.) and scoring logic for smarter flagging.
+Language normalization	Normalize comments to catch tricks like "s3nd m0ney" or "wh@ts@pp".
+Machine learning filter (optional)	Integrate a local/offline ML model to detect new spam/scam tactics (can use TensorFlow.js).
+User behavior profiling	Track frequency and patterns of commenters to detect possible bots or coordinated attacks.
+
+📢 Notification & Response System
+Feature	Description
+Real-time admin alerts	Push browser notifications or emails when high-risk comments are detected.
+Quick admin response tools	Add one-click buttons in the UI to hide, delete, or report comments.
+Block user IDs	Automatically blacklist users who repeatedly post malicious content.
+
+📊 Advanced Analytics & Reports
+Feature	Description
+Comment heatmap	Visualize when most flagged comments occur (e.g. during livestreams or post-uploads).
+Daily/weekly report summaries	Export flagged data (CSV or PDF), categorized by type, risk level, and platform.
+Traceable comment history	Log time, URL, video title, and user profile for each flagged comment.
+
+⚙️ Admin Control Features
+Feature	Description
+Custom flagging rules	Let admins define keywords, user IDs, or phrases to always flag.
+Platform switch UI	Seamlessly switch between Facebook and YouTube modes in the extension popup.
+Export/Import config	Save or transfer whitelists, rules, and settings across systems.
+
+🛡️ Platform Resilience Features
+Feature	Description
+Offline scanning support	Run scans even if not currently logged in, using previously cached content.
+Auto-adapt to new layouts	Use resilient DOM selectors or APIs to keep working despite minor UI changes on YouTube/Facebook.
+Extension lock screen	Protect extension access behind a passcode (for admin use only).
+
+File & Folder Layout
+
+cojim-security-extension/
+├── manifest.json
+├── background.js
+├── contentScripts/
+│   ├── youtubeScanner.js
+│   └── facebookScanner.js
+├── popup/
+│   ├── popup.html
+│   ├── popup.js
+│   ├── style.css
+│   └── tabs/
+│       ├── flagged.html
+│       ├── whitelist.html
+│       ├── analytics.html
+│       ├── settings.html
+├── icons/
+│   └── icon.png
+├── utils/
+│   ├── spamRules.js
+│   ├── storage.js
+│   ├── notifier.js
+│   └── traceUser.js
+
+
+KEY FEATURES IMPLEMENTED
+🔐 Security & Detection
+Heuristic + keyword + pattern-based detection (spamRules.js)
+
+Obfuscation detection (s3nd, wh@tsapp, etc.)
+
+Blacklist & Whitelist support (domains and users)
+
+Local user behavior profiling (repeated offenses)
+
+ML-ready (placeholder for future TensorFlow.js integration)
+
+📢 Notification System
+Real-time admin notification via browser notifications
+
+Admin-only quick action tools in popup UI: Flag, Delete, Report
+
+Triggers when dangerous patterns are detected (WhatsApp, phone numbers, begging, etc.)
+
+📊 Analytics
+Flagged comment logs with:
+
+Timestamp
+
+Video/Page title
+
+Full comment
+
+User info
+
+Daily/weekly summaries (CSV export-ready)
+
+Platform tabbing: YouTube | Facebook
+
+Visual heatmap logic placeholder (D3.js or Chart.js integration ready)
+
+⚙️ Admin Controls
+Tabs:
+
+Whitelisted Domains/Users
+
+Flagged Comments
+
+Analytics/Reports
+
+Settings
+
+Settings page includes: toggle detection types, import/export config, lock extension
+
+💾 Data Storage
+Uses browser.storage.local with modular storage logic in utils/storage.js
+
+Comments, users, whitelist, blacklist, and logs are all persistent
+
+🔄 Resilience & Future-proofing
+Smart DOM selectors to handle changing YouTube/Facebook structures
+
+Extension lock screen planned (PIN-based UI)
+
+API integration-ready (for future reporting to ministry CRM or alert system)
