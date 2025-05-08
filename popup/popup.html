@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COJIM Security Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dark-mode">
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">DASHBOARD</div>
+      <ul class="sidebar-menu">
+        <li class="active">
+          <i class="fas fa-chart-line"></i>
+          <span>Dashboard</span>
+        </li>
+        <li>
+          <i class="fas fa-flag"></i>
+          <span>Flagged Comments</span>
+        </li>
+        <li>
+          <i class="fas fa-file-alt"></i>
+          <span>Reports</span>
+        </li>
+        <li>
+          <i class="fas fa-list"></i>
+          <span>Whitelist</span>
+        </li>
+        <li>
+          <i class="fas fa-key"></i>
+          <span>Keywords</span>
+        </li>
+        <li>
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <h1>Dashboard</h1>
+        <div class="dark-mode-toggle">
+          <span>Dark Mode</span>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-container">
+        <div class="stat-card highlight">
+          <h2>235</h2>
+          <p>Total Flagged Comments</p>
+        </div>
+        <div class="stat-card">
+          <h2>47</h2>
+          <p>Pending Review</p>
+        </div>
+        <div class="stat-card">
+          <h2>31</h2>
+          <p>Automatically Deleted</p>
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <div class="flagged-comments-section">
+          <h2>Flagged Comments</h2>
+          
+          <div class="comments-container">
+            <!-- Comment Card 1 -->
+            <div class="comment-card">
+              <div class="comment-content">
+                <div class="platform-icon youtube">
+                  <i class="fab fa-youtube"></i>
+                </div>
+                <div class="comment-details">
+                  <h3>Some spam comment here</h3>
+                  <p class="username">User123</p>
+                  <p class="comment-text">Contains suspicious link</p>
+                </div>
+                <div class="comment-time">5 hours</div>
+              </div>
+              <div class="comment-actions">
+                <button class="action-btn review">Review</button>
+                <button class="action-btn approve">Approve</button>
+                <button class="action-btn delete">Delete</button>
+              </div>
+            </div>
+
+            <!-- Comment Card 2 -->
+            <div class="comment-card">
+              <div class="comment-content">
+                <div class="platform-icon facebook">
+                  <i class="fab fa-facebook-f"></i>
+                </div>
+                <div class="comment-details">
+                  <h3>I need help with money</h3>
+                  <p class="username">John Doe</p>
+                  <p class="comment-text">Seeking financial assistance</p>
+                </div>
+                <div class="comment-time">5 hours</div>
+              </div>
+              <div class="comment-actions">
+                <button class="action-btn review">Review</button>
+                <button class="action-btn approve">Approve</button>
+                <button class="action-btn delete">Delete</button>
+              </div>
+            </div>
+
+            <!-- Comment Card 3 -->
+            <div class="comment-card">
+              <div class="comment-content">
+                <div class="platform-icon youtube">
+                  <i class="fab fa-youtube"></i>
+                </div>
+                <div class="comment-details">
+                  <h3>Another spam message</h3>
+                  <p class="username">AliceW</p>
+                  <p class="comment-text">Potential scam</p>
+                </div>
+                <div class="comment-time">1 day ago</div>
+              </div>
+              <div class="comment-actions">
+                <button class="action-btn review">Review</button>
+                <button class="action-btn approve">Approve</button>
+                <button class="action-btn delete">Delete</button>
+              </div>
+            </div>
+
+            <!-- Comment Card 4 -->
+            <div class="comment-card">
+              <div class="comment-content">
+                <div class="platform-icon facebook">
+                  <i class="fab fa-facebook-f"></i>
+                </div>
+                <div class="comment-details">
+                  <h3>Check out this website!</h3>
+                  <p class="username">SpamBot</p>
+                  <p class="comment-text">Contains suspicious link</p>
+                </div>
+                <div class="comment-time">2 days ago</div>
+              </div>
+              <div class="comment-actions">
+                <button class="action-btn review">Review</button>
+                <button class="action-btn approve">Approve</button>
+                <button class="action-btn delete">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keywords Section -->
+        <div class="keywords-section">
+          <h2>Top Keywords</h2>
+          <div class="keywords-container">
+            <span class="keyword">spam</span>
+            <span class="keyword">scam</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
