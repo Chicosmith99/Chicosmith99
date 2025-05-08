@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>COJIM Security Extension</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg-color-light: #ffffff;
+      --text-color-light: #1f2937;
+      --bg-color-dark: #1f2937;
+      --text-color-dark: #f9fafb;
+    }
+    html.light {
+      background-color: var(--bg-color-light);
+      color: var(--text-color-light);
+    }
+    html.dark {
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-dark);
+    }
+    .sidebar {
+      width: 220px;
+      min-height: 600px;
+    }
+    .content {
+      flex-grow: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      max-height: 600px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .countdown-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: white;
+    }
+    .countdown-green {
+      background-color: #22c55e;
+    }
+    .countdown-yellow {
+      background-color: #eab308;
+    }
+    .countdown-red {
+      background-color: #ef4444;
+    }
+  </style>
+</head>
+<body class="light flex">
+  <nav class="sidebar bg-gray-100 dark:bg-gray-800 p-4">
+    <h1 class="text-xl font-bold mb-6">COJIM Security</h1>
+    <ul>
+      <li><button class="nav-btn w-full text-left py-2 px-3 rounded hover:bg-gray-300 dark:hover:bg-gray-700" data-tab="dashboard">Dashboard</button></li>
+      <li><button class="nav-btn w-full text-left py-2 px-3 rounded hover:bg-gray-300 dark:hover:bg-gray-700" data-tab="flagged">Flagged Comments</button></li>
+      <li><button class="nav-btn w-full text-left py-2 px-3 rounded hover:bg-gray-300 dark:hover:bg-gray-700" data-tab="reports">Reports</button></li>
+      <li><button class="nav-btn w-full text-left py-2 px-3 rounded hover:bg-gray-300 dark:hover:bg-gray-700" data-tab="whitelist">Whitelist</button></li>
+      <li><button class="nav-btn w-full text-left py-2 px-3 rounded hover:bg-gray-300 dark:hover:bg-gray-700" data-tab="keywords">Keywords</button></li>
+      <li><button class="nav-btn w-full text-left py-2 px-3 rounded hover:bg-gray-300 dark:hover:bg-gray-700" data-tab="settings">Settings</button></li>
+      <li><button class="nav-btn w-full text-left py-2 px-3 rounded hover:bg-gray-300 dark:hover:bg-gray-700" data-tab="analytics">Analytics</button></li>
+    </ul>
+  </nav>
+  <main class="content bg-white dark:bg-gray-900 rounded shadow">
+    <section id="dashboard" class="tab-content">
+      <h2 class="text-2xl font-semibold mb-4">Dashboard</h2>
+      <p>Summary of activity and latest flagged comments will appear here.</p>
+    </section>
+    <section id="flagged" class="tab-content">
+      <h2 class="text-2xl font-semibold mb-4">Flagged Content Log</h2>
+      <div id="flagged-comments-container" class="space-y-4">
+        <p>Loading flagged comments...</p>
+      </div>
+    </section>
+    <section id="reports" class="tab-content">
+      <h2 class="text-2xl font-semibold mb-4">Reports</h2>
+      <p>Reports log and export options will appear here.</p>
+    </section>
+    <section id="whitelist" class="tab-content">
+      <h2 class="text-2xl font-semibold mb-4">Whitelist Manager</h2>
+      <form id="whitelist-form" class="mb-4">
+        <label for="new-domain" class="block mb-1 font-medium">Add Domain or URL to Whitelist:</label>
+        <input type="text" id="new-domain" name="new-domain" placeholder="Enter domain or URL" class="w-full p-2 border rounded mb-2" />
+        <button type="button" id="add-domain-btn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add</button>
+      </form>
+      <ul id="whitelist-list" class="list-disc pl-5 space-y-2"></ul>
+    </section>
+    <section id="keywords" class="tab-content">
+      <h2 class="text-2xl font-semibold mb-4">Keyword Watchlist</h2>
+      <p>Manage flagged keywords and phrases here.</p>
+    </section>
+    <section id="settings" class="tab-content">
+      <h2 class="text-2xl font-semibold mb-4">Settings</h2>
+      <label class="flex items-center space-x-2 mb-4">
+        <input type="checkbox" id="dark-mode-toggle" />
+        <span>Dark Mode</span>
+      </label>
+      <p>Other settings will appear here.</p>
+    </section>
+    <section id="analytics" class="tab-content">
+      <h2 class="text-2xl font-semibold mb-4">Analytics</h2>
+      <p>Analytics and reports will appear here.</p>
+    </section>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

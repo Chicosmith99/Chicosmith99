@@ -1,0 +1,94 @@
+<h2>Flagged Content Log</h2>
+<div id="flagged-comments-container">
+  <p>Loading flagged comments...</p>
+</div>
+
+<script type="module">
+  import { getFlaggedComments, setStorage } from '../../utils/storage.js';
+
+  const container = document.getElementById('flagged-comments-container');
+
+  // Duration for comment expiry: 24 hours in milliseconds
+  const EXPIRY_DURATION = 24 * 60 * 60 * 1000;
+
+  // Render flagged comments with countdown timers
+  async function renderFlaggedComments() {
+    let comments = await getFlaggedComments();
+    if (!comments || comments.length === 0) {
+      container.innerHTML = '<p>No flagged comments.</p>';
+      return;
+    }
+
+    // Filter out expired comments
+    const now = Date.now();
+    comments = comments.filter(c => now - c.flaggedAt < EXPIRY_DURATION);
+
+    // Save filtered comments back to storage to remove expired
+    await setStorage('flaggedComments', comments);
+
+    if (comments.length === 0) {
+      container.innerHTML = '<p>No flagged comments.</p>';
+      return;
+    }
+
+    container.innerHTML = '';
+
+    comments.forEach((comment, index) => {
+      const div = document.createElement('div');
+      div.className = 'flagged-comment';
+      div.style.border = '1px solid #ccc';
+      div.style.padding = '8px';
+      div.style.marginBottom = '8px';
+
+      const text = document.createElement('p');
+      text.textContent = `Comment: ${comment.text || '[No text]'}`;
+      div.appendChild(text);
+
+      const platform = document.createElement('p');
+      platform.textContent = `Platform: ${comment.platform || 'Unknown'}`;
+      div.appendChild(platform);
+
+      const timestamp = document.createElement('p');
+      const flaggedDate = new Date(comment.flaggedAt);
+      timestamp.textContent = `Flagged At: ${flaggedDate.toLocaleString()}`;
+      div.appendChild(timestamp);
+
+      const countdown = document.createElement('p');
+      countdown.id = `countdown-${index}`;
+      div.appendChild(countdown);
+
+      container.appendChild(div);
+
+      // Start countdown timer
+      startCountdown(comment.flaggedAt, countdown, index);
+    });
+  }
+
+  // Start countdown timer for a comment
+  function startCountdown(flaggedAt, countdownElem, index) {
+    function updateCountdown() {
+      const now = Date.now();
+      const elapsed = now - flaggedAt;
+      const remaining = EXPIRY_DURATION - elapsed;
+
+      if (remaining <= 0) {
+        countdownElem.textContent = 'Expired - will be removed shortly.';
+        // Remove expired comment after short delay and re-render
+        setTimeout(renderFlaggedComments, 1000);
+        return;
+      }
+
+      const hours = Math.floor(remaining / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+      countdownElem.textContent = `Expires in: ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  }
+
+  // Initial render
+  renderFlaggedComments();
+</script>

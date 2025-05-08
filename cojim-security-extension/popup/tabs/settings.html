@@ -1,0 +1,41 @@
+<h2>Settings</h2>
+<form id="target-accounts-form">
+  <label for="youtube-channel">Target YouTube Channel ID or URL:</label><br />
+  <input type="text" id="youtube-channel" name="youtube-channel" placeholder="Enter YouTube channel ID or URL" class="full-width" /><br /><br />
+  
+  <label for="facebook-page">Target Facebook Page URL:</label><br />
+  <input type="text" id="facebook-page" name="facebook-page" placeholder="Enter Facebook page URL" class="full-width" /><br /><br />
+  
+  <button type="submit">Save Target Accounts</button>
+  <p id="save-status" class="save-status">Settings saved.</p>
+</form>
+
+<script type="module">
+  import { getTargetAccounts, setTargetAccounts } from '../../utils/storage.js';
+
+  const form = document.getElementById('target-accounts-form');
+  const youtubeInput = document.getElementById('youtube-channel');
+  const facebookInput = document.getElementById('facebook-page');
+  const saveStatus = document.getElementById('save-status');
+
+  async function loadSettings() {
+    const accounts = await getTargetAccounts();
+    youtubeInput.value = accounts.youtube || '';
+    facebookInput.value = accounts.facebook || '';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const accounts = {
+      youtube: youtubeInput.value.trim(),
+      facebook: facebookInput.value.trim(),
+    };
+    await setTargetAccounts(accounts);
+    saveStatus.style.display = 'block';
+    setTimeout(() => {
+      saveStatus.style.display = 'none';
+    }, 3000);
+  });
+
+  loadSettings();
+</script>

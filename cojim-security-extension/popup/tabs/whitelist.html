@@ -1,0 +1,60 @@
+<h2>Whitelist Manager</h2>
+<form id="whitelist-form">
+  <label for="new-domain">Add Domain or URL to Whitelist:</label><br />
+  <input type="text" id="new-domain" name="new-domain" placeholder="Enter domain or URL" class="full-width" />
+  <button type="button" id="add-domain-btn">Add</button>
+</form>
+
+<h3>Whitelisted Domains/URLs</h3>
+<ul id="whitelist-list"></ul>
+
+<script type="module">
+  import { getStorage, setStorage, STORAGE_KEYS } from '../../utils/storage.js';
+
+  const whitelistList = document.getElementById('whitelist-list');
+  const addDomainBtn = document.getElementById('add-domain-btn');
+  const newDomainInput = document.getElementById('new-domain');
+
+  async function loadWhitelist() {
+    const whitelist = (await getStorage(STORAGE_KEYS.WHITELIST)) || [];
+    whitelistList.innerHTML = '';
+    whitelist.forEach((domain, index) => {
+      const li = document.createElement('li');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = domain;
+      input.style.width = '80%';
+      input.addEventListener('change', () => {
+        whitelist[index] = input.value.trim();
+        saveWhitelist(whitelist);
+      });
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.addEventListener('click', () => {
+        whitelist.splice(index, 1);
+        saveWhitelist(whitelist);
+        loadWhitelist();
+      });
+      li.appendChild(input);
+      li.appendChild(deleteBtn);
+      whitelistList.appendChild(li);
+    });
+  }
+
+  async function saveWhitelist(whitelist) {
+    await setStorage(STORAGE_KEYS.WHITELIST, whitelist);
+  }
+
+  addDomainBtn.addEventListener('click', async () => {
+    const domain = newDomainInput.value.trim();
+    if (domain) {
+      const whitelist = (await getStorage(STORAGE_KEYS.WHITELIST)) || [];
+      whitelist.push(domain);
+      await saveWhitelist(whitelist);
+      newDomainInput.value = '';
+      loadWhitelist();
+    }
+  });
+
+  loadWhitelist();
+</script>
