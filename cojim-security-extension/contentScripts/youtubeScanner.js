@@ -91,6 +91,9 @@ if (commentsContainer) {
   observer.observe(commentsContainer, { childList: true, subtree: true });
   scanComments();
   detectLiveStreamAndUploads();
+
+  // Periodic scan every 5 seconds to ensure timely detection
+  setInterval(scanComments, 5000);
 } else {
   console.warn('YouTube comments container not found');
 }
