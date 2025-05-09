@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import WhitelistManager from './components/WhitelistManager';
 import FlaggedComments from './components/FlaggedComments';
 import Dashboard from './components/Dashboard';
@@ -6,9 +6,32 @@ import Reports from './components/Reports';
 import Keywords from './components/Keywords';
 import Settings from './components/Settings';
 import Analytics from './components/Analytics';
+import BlockedAccounts from './components/BlockedAccounts';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [badgeCounts, setBadgeCounts] = useState({
+    flagged: 0,
+    whitelist: 0,
+    blocked: 0,
+    keywords: 0,
+  });
+
+  // Placeholder effect to simulate badge count updates
+  useEffect(() => {
+    // In real implementation, fetch counts from storage or context
+    async function fetchBadgeCounts() {
+      // Example: fetch flagged comments count
+      // For now, static values
+      setBadgeCounts({
+        flagged: 3,
+        whitelist: 1,
+        blocked: 2,
+        keywords: 0,
+      });
+    }
+    fetchBadgeCounts();
+  }, []);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -22,6 +45,8 @@ function App() {
         return <WhitelistManager />;
       case 'keywords':
         return <Keywords />;
+      case 'blocked':
+        return <BlockedAccounts />;
       case 'settings':
         return <Settings />;
       case 'analytics':
@@ -31,23 +56,38 @@ function App() {
     }
   };
 
+  const renderTabButton = (tabKey, label) => (
+    <button
+      onClick={() => setActiveTab(tabKey)}
+      className={`w-full text-left p-2 hover:bg-gray-300 rounded flex justify-between items-center ${
+        activeTab === tabKey ? 'bg-gray-300 font-semibold' : ''
+      }`}
+    >
+      <span>{label}</span>
+      {badgeCounts[tabKey] > 0 && (
+        <span className="bg-red-600 text-white rounded-full px-2 text-xs font-bold">
+          {badgeCounts[tabKey]}
+        </span>
+      )}
+    </button>
+  );
+
   return (
     <div className="flex h-full w-full">
       <nav className="w-56 bg-gray-100 p-4">
         <h1 className="text-xl font-bold mb-6">COJIM Security</h1>
         <ul>
-          <li><button onClick={() => setActiveTab('dashboard')} className="w-full text-left p-2 hover:bg-gray-300 rounded">Dashboard</button></li>
-          <li><button onClick={() => setActiveTab('flagged')} className="w-full text-left p-2 hover:bg-gray-300 rounded">Flagged Comments</button></li>
-          <li><button onClick={() => setActiveTab('reports')} className="w-full text-left p-2 hover:bg-gray-300 rounded">Reports</button></li>
-          <li><button onClick={() => setActiveTab('whitelist')} className="w-full text-left p-2 hover:bg-gray-300 rounded">Whitelist</button></li>
-          <li><button onClick={() => setActiveTab('keywords')} className="w-full text-left p-2 hover:bg-gray-300 rounded">Keywords</button></li>
-          <li><button onClick={() => setActiveTab('settings')} className="w-full text-left p-2 hover:bg-gray-300 rounded">Settings</button></li>
-          <li><button onClick={() => setActiveTab('analytics')} className="w-full text-left p-2 hover:bg-gray-300 rounded">Analytics</button></li>
+          <li>{renderTabButton('dashboard', 'Dashboard')}</li>
+          <li>{renderTabButton('flagged', 'Flagged Comments')}</li>
+          <li>{renderTabButton('reports', 'Reports')}</li>
+          <li>{renderTabButton('whitelist', 'Whitelist')}</li>
+          <li>{renderTabButton('blocked', 'Blocked Accounts')}</li>
+          <li>{renderTabButton('keywords', 'Keywords')}</li>
+          <li>{renderTabButton('settings', 'Settings')}</li>
+          <li>{renderTabButton('analytics', 'Analytics')}</li>
         </ul>
       </nav>
-      <main className="flex-grow p-4 overflow-auto">
-        {renderTabContent()}
-      </main>
+      <main className="flex-grow p-4 overflow-auto">{renderTabContent()}</main>
     </div>
   );
 }
