@@ -1,3 +1,5 @@
+const browserAPI = window.browser || window.chrome;
+
 const whitelistList = document.getElementById('whitelist');
 const blacklistList = document.getElementById('blacklist');
 
@@ -8,11 +10,11 @@ const WHITELIST_KEY = 'whitelistUsers';
 const BLACKLIST_KEY = 'blacklistPatterns';
 
 function saveListToStorage(key, list) {
-  chrome.storage.local.set({ [key]: list });
+  browserAPI.storage.local.set({ [key]: list });
 }
 
 function loadListFromStorage(key, renderFn) {
-  chrome.storage.local.get([key], (result) => {
+  browserAPI.storage.local.get([key], (result) => {
     const items = result[key] || [];
     renderFn(items);
   });
@@ -34,7 +36,7 @@ function renderList(listElement, items, removeFn) {
 function addWhitelistEntry() {
   const value = whitelistInput.value.trim();
   if (!value) return;
-  chrome.storage.local.get([WHITELIST_KEY], (result) => {
+  browserAPI.storage.local.get([WHITELIST_KEY], (result) => {
     const list = result[WHITELIST_KEY] || [];
     list.push(value);
     saveListToStorage(WHITELIST_KEY, list);
@@ -46,7 +48,7 @@ function addWhitelistEntry() {
 function addBlacklistEntry() {
   const value = blacklistInput.value.trim();
   if (!value) return;
-  chrome.storage.local.get([BLACKLIST_KEY], (result) => {
+  browserAPI.storage.local.get([BLACKLIST_KEY], (result) => {
     const list = result[BLACKLIST_KEY] || [];
     list.push(value);
     saveListToStorage(BLACKLIST_KEY, list);
@@ -56,7 +58,7 @@ function addBlacklistEntry() {
 }
 
 function removeWhitelistEntry(index) {
-  chrome.storage.local.get([WHITELIST_KEY], (result) => {
+  browserAPI.storage.local.get([WHITELIST_KEY], (result) => {
     const list = result[WHITELIST_KEY] || [];
     list.splice(index, 1);
     saveListToStorage(WHITELIST_KEY, list);
@@ -65,7 +67,7 @@ function removeWhitelistEntry(index) {
 }
 
 function removeBlacklistEntry(index) {
-  chrome.storage.local.get([BLACKLIST_KEY], (result) => {
+  browserAPI.storage.local.get([BLACKLIST_KEY], (result) => {
     const list = result[BLACKLIST_KEY] || [];
     list.splice(index, 1);
     saveListToStorage(BLACKLIST_KEY, list);
