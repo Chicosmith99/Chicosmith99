@@ -1,4 +1,9 @@
-import { addFlaggedComment, getFlaggedComments, removeFlaggedComment, autoDeleteOldComments } from './utils/commentManager.js';
+import {
+  addFlaggedComment,
+  getFlaggedComments,
+  removeFlaggedComment,
+  autoDeleteOldComments
+} from './utils/commentManager.js';
 import { notifyAdmin } from './utils/notifier.js';
 
 const STORAGE_KEYS = {
@@ -6,6 +11,8 @@ const STORAGE_KEYS = {
   LIVE_STREAMS: 'flaggedLiveStreams',
   UPLOAD_POSTS: 'flaggedUploadPosts',
 };
+
+const adminEmails = ['info@cojim.org', 'christopherorjiministries@gmail.com'];
 
 async function getStorage(key) {
   return new Promise((resolve) => {
@@ -17,76 +24,75 @@ async function getStorage(key) {
 
 async function setStorage(key, value) {
   return new Promise((resolve) => {
-    chrome.storage.local.set({ [key]: value }, () => {
-      resolve();
-    });
+    chrome.storage.local.set({ [key]: value }, () => resolve());
   });
 }
 
-async function addFlaggedLiveStream(liveStream) {
-  const liveStreams = await getStorage(STORAGE_KEYS.LIVE_STREAMS);
-  liveStreams.push(liveStream);
-  await setStorage(STORAGE_KEYS.LIVE_STREAMS, liveStreams);
-}
-
-async function addFlaggedUploadPost(uploadPost) {
-  const uploadPosts = await getStorage(STORAGE_KEYS.UPLOAD_POSTS);
-  uploadPosts.push(uploadPost);
-  await setStorage(STORAGE_KEYS.UPLOAD_POSTS, uploadPosts);
+async function appendToStorage(key, item) {
+  const items = await getStorage(key);
+  items.push(item);
+  await setStorage(key, items);
 }
 
 function sendEmail(toAddresses, subject, body) {
-  console.log('Sending email to:', toAddresses);
+  // Replace this with a call to your backend or email service API
+  console.log('Pretend email to:', toAddresses);
   console.log('Subject:', subject);
   console.log('Body:', body);
 }
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  if (message.type === 'FLAG_COMMENT') {
-    const flaggedComment = {
+  try {
+    const timestampedData = {
       ...message.data,
       flaggedAt: Date.now(),
     };
-    await addFlaggedComment(flaggedComment);
-    notifyAdmin('Flagged Comment Detected', flaggedComment.text || 'A comment was flagged.');
-    const adminEmails = ['info@cojim.org', 'christopherorjiministries@gmail.com'];
-    const subject = 'COJIM Security Extension - Flagged Comment Alert';
-    const body = `A comment was flagged:\n\n${JSON.stringify(flaggedComment, null, 2)}`;
-    sendEmail(adminEmails, subject, body);
-    console.log('Flagged comment processed:', flaggedComment);
-    sendResponse({ status: 'received' });
+
+    switch (message.type) {
+      case 'FLAG_COMMENT':
+        await addFlaggedComment(timestampedData);
+        notifyAdmin('Flagged Comment Detected', timestampedData.text || 'A comment was flagged.');
+        sendEmail(adminEmails, 'COJIM Security Extension - Flagged Comment Alert', JSON.stringify(timestampedData, null, 2));
+        console.log('Flagged comment processed:', timestampedData);
+        sendResponse({ status: 'received' });
+        break;
+
+      case 'FLAG_LIVE_STREAM':
+        await appendToStorage(STORAGE_KEYS.LIVE_STREAMS, timestampedData);
+        notifyAdmin('Live Stream Detected', `Live stream detected on ${timestampedData.platform}`);
+        sendResponse({ status: 'received' });
+        break;
+
+      case 'FLAG_UPLOAD_POST':
+        await appendToStorage(STORAGE_KEYS.UPLOAD_POSTS, timestampedData);
+        notifyAdmin('Upload Post Detected', `Upload post detected on ${timestampedData.platform}`);
+        sendResponse({ status: 'received' });
+        break;
+
+      case 'GET_FLAGGED_COMMENTS':
+        const comments = await getFlaggedComments();
+        sendResponse({ status: 'success', comments });
+        break;
+
+      default:
+        sendResponse({ status: 'ignored', reason: 'Unknown message type' });
+    }
+
+    return true; // Keeps message channel open for async sendResponse
+  } catch (error) {
+    console.error('Error handling message:', message.type, error);
+    sendResponse({ status: 'error', message: error.message });
     return true;
   }
-  if (message.type === 'FLAG_LIVE_STREAM') {
-    const flaggedLiveStream = {
-      ...message.data,
-      flaggedAt: Date.now(),
-    };
-    await addFlaggedLiveStream(flaggedLiveStream);
-    notifyAdmin('Live Stream Detected', `Live stream detected on ${flaggedLiveStream.platform}`);
-    sendResponse({ status: 'received' });
-    return true;
-  }
-  if (message.type === 'FLAG_UPLOAD_POST') {
-    const flaggedUploadPost = {
-      ...message.data,
-      flaggedAt: Date.now(),
-    };
-    await addFlaggedUploadPost(flaggedUploadPost);
-    notifyAdmin('Upload Post Detected', `Upload post detected on ${flaggedUploadPost.platform}`);
-    sendResponse({ status: 'received' });
-    return true;
-  }
-  if (message.type === 'GET_FLAGGED_COMMENTS') {
-    const comments = await getFlaggedComments();
-    sendResponse({ status: 'success', comments });
-    return true;
-  }
-  return false;
 });
 
-autoDeleteOldComments().then((filtered) => {
-  console.log('Auto-deleted old flagged comments, remaining:', filtered.length);
-});
+// Cleanup old data
+autoDeleteOldComments()
+  .then(filtered => {
+    console.log('Auto-deleted old flagged comments, remaining:', filtered.length);
+  })
+  .catch(error => {
+    console.error('Error auto-deleting old comments:', error);
+  });
 
-console.log('Background service worker initialized');
+console.log('Background script initialized');

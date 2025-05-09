@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Options</title>
+</head>
+<body>
+  <h1>Options</h1>
+  <div>
+    <h2>Whitelist</h2>
+    <input type="text" id="whitelistInput" placeholder="Add whitelist entry" />
+    <button id="addWhitelistBtn">Add</button>
+    <ul id="whitelist"></ul>
+  </div>
+  <div>
+    <h2>Blacklist</h2>
+    <input type="text" id="blacklistInput" placeholder="Add blacklist entry" />
+    <button id="addBlacklistBtn">Add</button>
+    <ul id="blacklist"></ul>
+  </div>
+  <script src="options.js"></script>
+  <script>
+    document.getElementById('addWhitelistBtn').addEventListener('click', addWhitelistEntry);
+    document.getElementById('addBlacklistBtn').addEventListener('click', addBlacklistEntry);
+  </script>
+</body>
+</html>
