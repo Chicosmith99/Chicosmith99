@@ -1,56 +1,92 @@
 import { addFlaggedComment, getFlaggedComments, removeFlaggedComment, autoDeleteOldComments } from './utils/commentManager.js';
 import { notifyAdmin } from './utils/notifier.js';
 
-// Background script for COJIM Social Media Security Extension
+const STORAGE_KEYS = {
+  FLAGGED_COMMENTS: 'flaggedComments',
+  LIVE_STREAMS: 'flaggedLiveStreams',
+  UPLOAD_POSTS: 'flaggedUploadPosts',
+};
 
-// Placeholder function to send email - to be implemented with an email API
+async function getStorage(key) {
+  return new Promise((resolve) => {
+    chrome.storage.local.get([key], (result) => {
+      resolve(result[key] || []);
+    });
+  });
+}
+
+async function setStorage(key, value) {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ [key]: value }, () => {
+      resolve();
+    });
+  });
+}
+
+async function addFlaggedLiveStream(liveStream) {
+  const liveStreams = await getStorage(STORAGE_KEYS.LIVE_STREAMS);
+  liveStreams.push(liveStream);
+  await setStorage(STORAGE_KEYS.LIVE_STREAMS, liveStreams);
+}
+
+async function addFlaggedUploadPost(uploadPost) {
+  const uploadPosts = await getStorage(STORAGE_KEYS.UPLOAD_POSTS);
+  uploadPosts.push(uploadPost);
+  await setStorage(STORAGE_KEYS.UPLOAD_POSTS, uploadPosts);
+}
+
 function sendEmail(toAddresses, subject, body) {
   console.log('Sending email to:', toAddresses);
   console.log('Subject:', subject);
   console.log('Body:', body);
-  // TODO: Integrate with an email sending service API
 }
 
-// Listener for messages from content scripts and popup
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.type === 'FLAG_COMMENT') {
     const flaggedComment = {
       ...message.data,
       flaggedAt: Date.now(),
     };
-    // Store flagged comment
     await addFlaggedComment(flaggedComment);
-
-    // Send browser notification
     notifyAdmin('Flagged Comment Detected', flaggedComment.text || 'A comment was flagged.');
-
-    // Send email to admin addresses
     const adminEmails = ['info@cojim.org', 'christopherorjiministries@gmail.com'];
     const subject = 'COJIM Security Extension - Flagged Comment Alert';
     const body = `A comment was flagged:\n\n${JSON.stringify(flaggedComment, null, 2)}`;
     sendEmail(adminEmails, subject, body);
-
     console.log('Flagged comment processed:', flaggedComment);
     sendResponse({ status: 'received' });
-    return true; // Keep the message channel open for async response
+    return true;
+  }
+  if (message.type === 'FLAG_LIVE_STREAM') {
+    const flaggedLiveStream = {
+      ...message.data,
+      flaggedAt: Date.now(),
+    };
+    await addFlaggedLiveStream(flaggedLiveStream);
+    notifyAdmin('Live Stream Detected', `Live stream detected on ${flaggedLiveStream.platform}`);
+    sendResponse({ status: 'received' });
+    return true;
+  }
+  if (message.type === 'FLAG_UPLOAD_POST') {
+    const flaggedUploadPost = {
+      ...message.data,
+      flaggedAt: Date.now(),
+    };
+    await addFlaggedUploadPost(flaggedUploadPost);
+    notifyAdmin('Upload Post Detected', `Upload post detected on ${flaggedUploadPost.platform}`);
+    sendResponse({ status: 'received' });
+    return true;
   }
   if (message.type === 'GET_FLAGGED_COMMENTS') {
     const comments = await getFlaggedComments();
     sendResponse({ status: 'success', comments });
     return true;
   }
-  if (message.type === 'REMOVE_FLAGGED_COMMENT') {
-    await removeFlaggedComment(message.index);
-    sendResponse({ status: 'removed' });
-    return true;
-  }
   return false;
 });
 
-// Auto-delete old comments on startup
 autoDeleteOldComments().then((filtered) => {
   console.log('Auto-deleted old flagged comments, remaining:', filtered.length);
 });
 
-console.log('Background script initialized');
-
+console.log('Background service worker initialized');

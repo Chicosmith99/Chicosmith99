@@ -1,14 +1,14 @@
-async function getStorage(key) {
-  return new Promise((resolve) => {
-    chrome.storage.local.get([key], (result) => {
-      resolve(result[key] || []);
-    });
-  });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   const dashboardContent = document.getElementById('dashboard-content');
   const navLinks = document.querySelectorAll('nav ul li a');
+
+  async function getStorage(key) {
+    return new Promise((resolve) => {
+      chrome.storage.local.get([key], (result) => {
+        resolve(result[key] || []);
+      });
+    });
+  }
 
   async function loadYouTubeComments() {
     const comments = await getStorage('flaggedComments');
@@ -17,66 +17,55 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     let html = '<h2>YouTube Comments</h2><ul>';
-    comments.forEach((comment, index) => {
-      html += `<li><strong>${comment.author || 'Unknown'}</strong>: ${comment.text || ''}</li>`;
+    comments.forEach((comment) => {
+      if (comment.platform === 'YouTube') {
+        html += `<li><strong>${comment.author || 'Unknown'}</strong>: ${comment.text || ''}</li>`;
+      }
     });
     html += '</ul>';
     dashboardContent.innerHTML = html;
   }
 
   async function loadFacebookComments() {
-    // Assuming Facebook comments stored similarly, adjust key if different
     const comments = await getStorage('flaggedComments');
     if (comments.length === 0) {
       dashboardContent.innerHTML = '<p>No flagged Facebook comments found.</p>';
       return;
     }
     let html = '<h2>Facebook Comments</h2><ul>';
-    comments.forEach((comment, index) => {
-      html += `<li><strong>${comment.author || 'Unknown'}</strong>: ${comment.text || ''}</li>`;
+    comments.forEach((comment) => {
+      if (comment.platform === 'Facebook') {
+        html += `<li><strong>${comment.author || 'Unknown'}</strong>: ${comment.text || ''}</li>`;
+      }
     });
     html += '</ul>';
     dashboardContent.innerHTML = html;
   }
 
-  async function loadWhitelist() {
-    const whitelist = await getStorage('whitelist');
-    if (whitelist.length === 0) {
-      dashboardContent.innerHTML = '<p>Whitelist is empty.</p>';
+  async function loadLiveStreams() {
+    const liveStreams = await getStorage('flaggedLiveStreams');
+    if (liveStreams.length === 0) {
+      dashboardContent.innerHTML = '<p>No live streams detected.</p>';
       return;
     }
-    let html = '<h2>Whitelist Manager</h2><ul>';
-    whitelist.forEach((entry) => {
-      html += `<li>${entry}</li>`;
+    let html = '<h2>Live Streams</h2><ul>';
+    liveStreams.forEach((stream) => {
+      html += `<li><strong>${stream.platform}</strong>: <a href="${stream.url}" target="_blank">${stream.url}</a> - Detected at ${new Date(stream.timestamp).toLocaleString()}</li>`;
     });
     html += '</ul>';
     dashboardContent.innerHTML = html;
   }
 
-  async function loadFlaggedWords() {
-    const blacklist = await getStorage('blacklist');
-    if (blacklist.length === 0) {
-      dashboardContent.innerHTML = '<p>No flagged words found.</p>';
+  async function loadUploadPosts() {
+    const uploadPosts = await getStorage('flaggedUploadPosts');
+    if (uploadPosts.length === 0) {
+      dashboardContent.innerHTML = '<p>No upload posts detected.</p>';
       return;
     }
-    let html = '<h2>Flagged Words</h2><ul>';
-    blacklist.forEach((word) => {
-      html += `<li>${word}</li>`;
+    let html = '<h2>Upload Posts</h2><ul>';
+    uploadPosts.forEach((post) => {
+      html += `<li><strong>${post.platform}</strong>: <a href="${post.url}" target="_blank">${post.url}</a> - Info: ${post.info || ''} - Detected at ${new Date(post.timestamp).toLocaleString()}</li>`;
     });
-    html += '</ul>';
-    dashboardContent.innerHTML = html;
-  }
-
-  async function loadFlaggedAccounts() {
-    const accounts = await getStorage('targetAccounts');
-    if (!accounts || (Object.keys(accounts).length === 0)) {
-      dashboardContent.innerHTML = '<p>No flagged accounts found.</p>';
-      return;
-    }
-    let html = '<h2>Flagged Accounts</h2><ul>';
-    for (const [platform, account] of Object.entries(accounts)) {
-      html += `<li><strong>${platform}:</strong> ${account}</li>`;
-    }
     html += '</ul>';
     dashboardContent.innerHTML = html;
   }
@@ -93,14 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
         case 'facebook':
           await loadFacebookComments();
           break;
-        case 'whitelist':
-          await loadWhitelist();
+        case 'live-streams':
+          await loadLiveStreams();
           break;
-        case 'flagged-words':
-          await loadFlaggedWords();
-          break;
-        case 'accounts':
-          await loadFlaggedAccounts();
+        case 'upload-posts':
+          await loadUploadPosts();
           break;
         default:
           dashboardContent.innerHTML = '<p>Content not found.</p>';
@@ -108,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Load default tab content on page load
   if (navLinks.length > 0) {
     const defaultTarget = navLinks[0].getAttribute('href').substring(1);
     switch (defaultTarget) {
@@ -118,14 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'facebook':
         loadFacebookComments();
         break;
-      case 'whitelist':
-        loadWhitelist();
+      case 'live-streams':
+        loadLiveStreams();
         break;
-      case 'flagged-words':
-        loadFlaggedWords();
-        break;
-      case 'accounts':
-        loadFlaggedAccounts();
+      case 'upload-posts':
+        loadUploadPosts();
         break;
       default:
         dashboardContent.innerHTML = '<p>Content not found.</p>';
