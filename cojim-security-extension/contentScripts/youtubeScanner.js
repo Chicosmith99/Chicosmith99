@@ -96,4 +96,72 @@ if (commentsContainer) {
   setInterval(scanComments, 5000);
 } else {
   console.warn('YouTube comments container not found');
+  removeScanningIndicator();
+}
+
+const commentsContainer = document.getElementById('contents');
+if (commentsContainer) {
+  observer.observe(commentsContainer, { childList: true, subtree: true });
+  async function scanComments() {
+  const targetAccounts = await getTargetAccounts();
+  if (!window.location.href.includes(targetAccounts.youtube)) {
+    console.log('YouTube Scanner: Not target channel, skipping scan.');
+    removeScanningIndicator();
+    return;
+  }
+
+  addScanningIndicator();
+
+  const commentElements = document.querySelectorAll('#contents #content-text');
+
+  commentElements.forEach(commentEl => {
+    const text = commentEl.textContent || '';
+    if (isSpam(text)) {
+      chrome.runtime.sendMessage({
+        type: 'FLAG_COMMENT',
+        data: {
+          text,
+          platform: 'YouTube',
+          url: window.location.href,
+          timestamp: Date.now(),
+        }
+      });
+    }
+  });
+}
+
+  detectLiveStreamAndUploads();
+
+  // Periodic scan every 5 seconds to ensure timely detection
+  setInterval(scanComments, 5000);
+} else {
+  console.warn('YouTube comments container not found');
+}
+// Add a visible scanning indicator to the page
+function addScanningIndicator() {
+  let indicator = document.getElementById('cojim-scanning-indicator');
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'cojim-scanning-indicator';
+    indicator.style.position = 'fixed';
+    indicator.style.bottom = '10px';
+    indicator.style.right = '10px';
+    indicator.style.padding = '5px 10px';
+    indicator.style.backgroundColor = 'rgba(0, 123, 255, 0.8)';
+    indicator.style.color = 'white';
+    indicator.style.fontSize = '12px';
+    indicator.style.borderRadius = '4px';
+    indicator.style.zIndex = '10000';
+    indicator.style.fontFamily = 'Arial, sans-serif';
+    indicator.textContent = 'COJIM Scanning Comments...';
+    document.body.appendChild(indicator);
+  }
+}
+
+// Remove the scanning indicator from the page
+function removeScanningIndicator() {
+  const indicator = document.getElementById('cojim-scanning-indicator');
+  if (indicator) {
+    indicator.remove();
+  }
 }
