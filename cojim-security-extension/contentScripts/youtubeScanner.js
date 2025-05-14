@@ -98,45 +98,6 @@ if (commentsContainer) {
   console.warn('YouTube comments container not found');
   removeScanningIndicator();
 }
-
-const commentsContainer = document.getElementById('contents');
-if (commentsContainer) {
-  observer.observe(commentsContainer, { childList: true, subtree: true });
-  async function scanComments() {
-  const targetAccounts = await getTargetAccounts();
-  if (!window.location.href.includes(targetAccounts.youtube)) {
-    console.log('YouTube Scanner: Not target channel, skipping scan.');
-    removeScanningIndicator();
-    return;
-  }
-
-  addScanningIndicator();
-
-  const commentElements = document.querySelectorAll('#contents #content-text');
-
-  commentElements.forEach(commentEl => {
-    const text = commentEl.textContent || '';
-    if (isSpam(text)) {
-      chrome.runtime.sendMessage({
-        type: 'FLAG_COMMENT',
-        data: {
-          text,
-          platform: 'YouTube',
-          url: window.location.href,
-          timestamp: Date.now(),
-        }
-      });
-    }
-  });
-}
-
-  detectLiveStreamAndUploads();
-
-  // Periodic scan every 5 seconds to ensure timely detection
-  setInterval(scanComments, 5000);
-} else {
-  console.warn('YouTube comments container not found');
-}
 // Add a visible scanning indicator to the page
 function addScanningIndicator() {
   let indicator = document.getElementById('cojim-scanning-indicator');
