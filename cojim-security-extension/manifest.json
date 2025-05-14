@@ -3,7 +3,7 @@
   "name": "COJIM Social Media Security Extension",
   "version": "3.0.0",
   "description": "Private-use extension for military-grade security monitoring of COJIM's social media accounts.",
-  "permissions": [
+  "permissions": [ "https://studio.youtube.com/*",
     "storage",
     "tabs",
     "notifications",
@@ -17,7 +17,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*"],
+      "matches": ["https://studio.youtube.com/*"],
       "js": ["contentScripts/youtubeScanner.js"],
       "run_at": "document_end"
     },
