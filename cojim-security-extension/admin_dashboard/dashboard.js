@@ -70,6 +70,48 @@ document.addEventListener('DOMContentLoaded', () => {
     dashboardContent.innerHTML = html;
   }
 
+  async function loadWhitelist() {
+    const whitelist = await getStorage('whitelist');
+    if (whitelist.length === 0) {
+      dashboardContent.innerHTML = '<p>No whitelist entries found.</p>';
+      return;
+    }
+    let html = '<h2>Whitelist Manager</h2><ul>';
+    whitelist.forEach((entry) => {
+      html += `<li>${entry}</li>`;
+    });
+    html += '</ul>';
+    dashboardContent.innerHTML = html;
+  }
+
+  async function loadFlaggedWords() {
+    const flaggedWords = await getStorage('flaggedWords');
+    if (flaggedWords.length === 0) {
+      dashboardContent.innerHTML = '<p>No flagged words found.</p>';
+      return;
+    }
+    let html = '<h2>Flagged Words</h2><ul>';
+    flaggedWords.forEach((word) => {
+      html += `<li>${word}</li>`;
+    });
+    html += '</ul>';
+    dashboardContent.innerHTML = html;
+  }
+
+  async function loadFlaggedAccounts() {
+    const flaggedAccounts = await getStorage('flaggedAccounts');
+    if (flaggedAccounts.length === 0) {
+      dashboardContent.innerHTML = '<p>No flagged accounts found.</p>';
+      return;
+    }
+    let html = '<h2>Flagged Accounts</h2><ul>';
+    flaggedAccounts.forEach((account) => {
+      html += `<li>${account}</li>`;
+    });
+    html += '</ul>';
+    dashboardContent.innerHTML = html;
+  }
+
   navLinks.forEach(link => {
     link.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -87,6 +129,15 @@ document.addEventListener('DOMContentLoaded', () => {
           break;
         case 'upload-posts':
           await loadUploadPosts();
+          break;
+        case 'whitelist':
+          await loadWhitelist();
+          break;
+        case 'flagged-words':
+          await loadFlaggedWords();
+          break;
+        case 'accounts':
+          await loadFlaggedAccounts();
           break;
         default:
           dashboardContent.innerHTML = '<p>Content not found.</p>';
@@ -108,6 +159,15 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
       case 'upload-posts':
         loadUploadPosts();
+        break;
+      case 'whitelist':
+        loadWhitelist();
+        break;
+      case 'flagged-words':
+        loadFlaggedWords();
+        break;
+      case 'accounts':
+        loadFlaggedAccounts();
         break;
       default:
         dashboardContent.innerHTML = '<p>Content not found.</p>';
