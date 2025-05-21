@@ -1,18 +1,30 @@
+import { getStorage, setStorage } from '../utils/storage.js';
+
+
+import { getStorage, setStorage } from '../utils/storage.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   const dashboardContent = document.getElementById('dashboard-content');
   const navLinks = document.querySelectorAll('nav ul li a');
+  const darkModeToggle = document.getElementById('darkModeToggle');
 
-  async function getStorage(key) {
-    return new Promise((resolve) => {
-      chrome.storage.local.get([key], (result) => {
-        resolve(result[key] || []);
-      });
-    });
+  // Load dark mode preference from localStorage
+  if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark-mode');
   }
+
+  darkModeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    if (document.body.classList.contains('dark-mode')) {
+      localStorage.setItem('darkMode', 'enabled');
+    } else {
+      localStorage.setItem('darkMode', 'disabled');
+    }
+  });
 
   async function loadYouTubeComments() {
     const comments = await getStorage('flaggedComments');
-    if (comments.length === 0) {
+    if (!comments || comments.length === 0) {
       dashboardContent.innerHTML = '<p>No flagged YouTube comments found.</p>';
       return;
     }
@@ -28,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadFacebookComments() {
     const comments = await getStorage('flaggedComments');
-    if (comments.length === 0) {
+    if (!comments || comments.length === 0) {
       dashboardContent.innerHTML = '<p>No flagged Facebook comments found.</p>';
       return;
     }
@@ -44,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadLiveStreams() {
     const liveStreams = await getStorage('flaggedLiveStreams');
-    if (liveStreams.length === 0) {
+    if (!liveStreams || liveStreams.length === 0) {
       dashboardContent.innerHTML = '<p>No live streams detected.</p>';
       return;
     }
@@ -58,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadUploadPosts() {
     const uploadPosts = await getStorage('flaggedUploadPosts');
-    if (uploadPosts.length === 0) {
+    if (!uploadPosts || uploadPosts.length === 0) {
       dashboardContent.innerHTML = '<p>No upload posts detected.</p>';
       return;
     }
@@ -72,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadWhitelist() {
     const whitelist = await getStorage('whitelist');
-    if (whitelist.length === 0) {
+    if (!whitelist || whitelist.length === 0) {
       dashboardContent.innerHTML = '<p>No whitelist entries found.</p>';
       return;
     }
@@ -86,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadFlaggedWords() {
     const flaggedWords = await getStorage('flaggedWords');
-    if (flaggedWords.length === 0) {
+    if (!flaggedWords || flaggedWords.length === 0) {
       dashboardContent.innerHTML = '<p>No flagged words found.</p>';
       return;
     }
@@ -100,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadFlaggedAccounts() {
     const flaggedAccounts = await getStorage('flaggedAccounts');
-    if (flaggedAccounts.length === 0) {
+    if (!flaggedAccounts || flaggedAccounts.length === 0) {
       dashboardContent.innerHTML = '<p>No flagged accounts found.</p>';
       return;
     }
@@ -111,6 +123,35 @@ document.addEventListener('DOMContentLoaded', () => {
     html += '</ul>';
     dashboardContent.innerHTML = html;
   }
+
+  // New function to render whitelist entries in the whitelist manager UI
+  async function renderWhitelistEntries() {
+    const whitelist = await getStorage('whitelist') || [];
+    const whitelistEntries = document.getElementById('whitelistEntries');
+    whitelistEntries.innerHTML = '';
+    whitelist.forEach((entry) => {
+      const li = document.createElement('li');
+      li.textContent = entry;
+      whitelistEntries.appendChild(li);
+    });
+  }
+
+  // Add event listener for adding new whitelist domain
+  const addWhitelistDomainBtn = document.getElementById('addWhitelistDomainBtn');
+  const newWhitelistDomainInput = document.getElementById('newWhitelistDomain');
+
+  addWhitelistDomainBtn.addEventListener('click', async () => {
+    const newDomain = newWhitelistDomainInput.value.trim();
+    if (!newDomain) return;
+
+    let whitelist = await getStorage('whitelist') || [];
+    if (!whitelist.includes(newDomain)) {
+      whitelist.push(newDomain);
+      await setStorage('whitelist', whitelist);
+      await renderWhitelistEntries();
+      newWhitelistDomainInput.value = '';
+    }
+  });
 
   navLinks.forEach(link => {
     link.addEventListener('click', async (e) => {
@@ -145,6 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Initial render of whitelist entries
+  renderWhitelistEntries();
+
   if (navLinks.length > 0) {
     const defaultTarget = navLinks[0].getAttribute('href').substring(1);
     switch (defaultTarget) {
@@ -173,4 +217,3 @@ document.addEventListener('DOMContentLoaded', () => {
         dashboardContent.innerHTML = '<p>Content not found.</p>';
     }
   }
-});

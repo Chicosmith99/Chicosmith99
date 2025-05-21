@@ -6,15 +6,15 @@ console.log('YouTube Scanner loaded');
 async function scanComments() {
   const targetAccounts = await getTargetAccounts();
   if (!window.location.href.includes(targetAccounts.youtube)) {
-    console.log('YouTube Scanner: Not target channel, skipping scan.');
+    console.log('YouTube Scanner: Not target page, skipping scan.');
     return;
   }
 
-  const commentElements = document.querySelectorAll('#contents #content-text');
-
-  commentElements.forEach(commentEl => {
+  // Scan historical comments on videos
+  const historicalComments = document.querySelectorAll('#contents #content-text');
+  for (const commentEl of historicalComments) {
     const text = commentEl.textContent || '';
-    if (isSpam(text)) {
+    if (await isSpam(text)) {
       chrome.runtime.sendMessage({
         type: 'FLAG_COMMENT',
         data: {
@@ -22,17 +22,18 @@ async function scanComments() {
           platform: 'YouTube',
           url: window.location.href,
           timestamp: Date.now(),
+          info: 'Historical comment',
         }
       });
     }
-  });
+  }
 }
 
 // Detect live stream status and uploads
 async function detectLiveStreamAndUploads() {
   const targetAccounts = await getTargetAccounts();
   if (!window.location.href.includes(targetAccounts.youtube)) {
-    console.log('YouTube Scanner: Not target channel, skipping live stream/upload detection.');
+    console.log('YouTube Scanner: Not target page, skipping live stream/upload detection.');
     return;
   }
 
@@ -51,44 +52,35 @@ async function detectLiveStreamAndUploads() {
     });
   }
 
-  // Detect recent uploads by checking video upload date elements on channel page
-  // This is a simplified example; real implementation may require more complex logic
-  const uploadElements = document.querySelectorAll('#contents ytd-grid-video-renderer #metadata-line span:nth-child(2)');
-  uploadElements.forEach(uploadEl => {
-    const uploadText = uploadEl.textContent || '';
-    if (uploadText.includes('ago')) {
+  // Detect recent uploads by checking video publish date
+  const publishDateEl = document.querySelector('#info-strings yt-formatted-string');
+  if (publishDateEl) {
+    const publishText = publishDateEl.textContent || '';
+    // Simple heuristic: if published within last 24 hours
+    if (publishText.includes('hour') || publishText.includes('minute')) {
       chrome.runtime.sendMessage({
         type: 'FLAG_UPLOAD_POST',
         data: {
           platform: 'YouTube',
           url: window.location.href,
           timestamp: Date.now(),
-          info: uploadText,
+          info: `Video published recently: ${publishText}`,
         }
       });
     }
-  });
+  }
 }
 
-const commentForm = document.querySelector('ytd-comment-simplebox-renderer form');
-if (commentForm) {
-  commentForm.addEventListener('submit', () => {
-    setTimeout(() => {
-      scanComments();
-    }, 1000);
-  });
-}
-
-const observer = new MutationObserver((mutations) => {
+const commentObserver = new MutationObserver((mutations) => {
   mutations.forEach(() => {
     scanComments();
     detectLiveStreamAndUploads();
   });
 });
 
-const commentsContainer = document.getElementById('contents');
+const commentsContainer = document.getElementById('comments');
 if (commentsContainer) {
-  observer.observe(commentsContainer, { childList: true, subtree: true });
+  commentObserver.observe(commentsContainer, { childList: true, subtree: true });
   scanComments();
   detectLiveStreamAndUploads();
 
@@ -96,33 +88,4 @@ if (commentsContainer) {
   setInterval(scanComments, 5000);
 } else {
   console.warn('YouTube comments container not found');
-  removeScanningIndicator();
-}
-// Add a visible scanning indicator to the page
-function addScanningIndicator() {
-  let indicator = document.getElementById('cojim-scanning-indicator');
-  if (!indicator) {
-    indicator = document.createElement('div');
-    indicator.id = 'cojim-scanning-indicator';
-    indicator.style.position = 'fixed';
-    indicator.style.bottom = '10px';
-    indicator.style.right = '10px';
-    indicator.style.padding = '5px 10px';
-    indicator.style.backgroundColor = 'rgba(0, 123, 255, 0.8)';
-    indicator.style.color = 'white';
-    indicator.style.fontSize = '12px';
-    indicator.style.borderRadius = '4px';
-    indicator.style.zIndex = '10000';
-    indicator.style.fontFamily = 'Arial, sans-serif';
-    indicator.textContent = 'COJIM Scanning Comments...';
-    document.body.appendChild(indicator);
-  }
-}
-
-// Remove the scanning indicator from the page
-function removeScanningIndicator() {
-  const indicator = document.getElementById('cojim-scanning-indicator');
-  if (indicator) {
-    indicator.remove();
-  }
 }

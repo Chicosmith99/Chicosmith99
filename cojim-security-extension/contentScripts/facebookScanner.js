@@ -10,11 +10,11 @@ async function scanComments() {
     return;
   }
 
-  const commentElements = document.querySelectorAll('[aria-label="Comment"] div[dir="auto"] span');
-
-  commentElements.forEach(commentEl => {
+  // Scan historical comments on posts
+  const historicalComments = document.querySelectorAll('[aria-label="Comment"] div[dir="auto"] span');
+  for (const commentEl of historicalComments) {
     const text = commentEl.textContent || '';
-    if (isSpam(text)) {
+    if (await isSpam(text)) {
       chrome.runtime.sendMessage({
         type: 'FLAG_COMMENT',
         data: {
@@ -22,10 +22,11 @@ async function scanComments() {
           platform: 'Facebook',
           url: window.location.href,
           timestamp: Date.now(),
+          info: 'Historical comment',
         }
       });
     }
-  });
+  }
 }
 
 // Detect live stream status and uploads

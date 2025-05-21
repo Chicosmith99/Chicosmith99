@@ -3,26 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Options</title>
+  <title>COJIM Extension Settings</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 1rem; background: #f7f7f7; }
+    h1 { margin-bottom: 1rem; }
+    input[type="text"] { padding: 0.4rem; width: 250px; margin-right: 0.5rem; }
+    button { padding: 0.4rem 1rem; cursor: pointer; }
+    ul { list-style: none; padding-left: 0; }
+    li { margin: 0.5rem 0; display: flex; align-items: center; }
+    li input { flex: 1; margin-right: 0.5rem; }
+    .section { margin-bottom: 2rem; }
+  </style>
 </head>
 <body>
-  <h1>Options</h1>
-  <div>
+  <h1>COJIM Security Settings</h1>
+
+  <div class="section">
     <h2>Whitelist</h2>
-    <input type="text" id="whitelistInput" placeholder="Add whitelist entry" />
+    <input type="text" id="whitelistInput" placeholder="Enter domain to whitelist" />
     <button id="addWhitelistBtn">Add</button>
-    <ul id="whitelist"></ul>
+    <ul id="whitelistList"></ul>
   </div>
-  <div>
+
+  <div class="section">
     <h2>Blacklist</h2>
-    <input type="text" id="blacklistInput" placeholder="Add blacklist entry" />
+    <input type="text" id="blacklistInput" placeholder="Enter domain to blacklist" />
     <button id="addBlacklistBtn">Add</button>
-    <ul id="blacklist"></ul>
+    <ul id="blacklistList"></ul>
   </div>
-  <script src="options.js"></script>
-  <script>
-    document.getElementById('addWhitelistBtn').addEventListener('click', addWhitelistEntry);
-    document.getElementById('addBlacklistBtn').addEventListener('click', addBlacklistEntry);
-  </script>
+
+  <script type="module" src="options.js"></script>
 </body>
 </html>
+<label>
+  <input type="checkbox" id="dark-mode-toggle" />
+  Dark Mode
+</label>

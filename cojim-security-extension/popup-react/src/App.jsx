@@ -7,6 +7,9 @@ import Keywords from './components/Keywords';
 import Settings from './components/Settings';
 import Analytics from './components/Analytics';
 import BlockedAccounts from './components/BlockedAccounts';
+import NotificationManager from './components/NotificationManager.jsx';
+import SpamRuleManager from './components/SpamRuleManager.jsx';
+import ModerationWorkflow from './components/ModerationWorkflow.jsx';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -51,6 +54,12 @@ function App() {
         return <Settings />;
       case 'analytics':
         return <Analytics />;
+      case 'notifications':
+        return <NotificationManager />;
+      case 'spamrules':
+        return <SpamRuleManager />;
+      case 'moderation':
+        return <ModerationWorkflow />;
       default:
         return <Dashboard />;
     }
@@ -85,6 +94,9 @@ function App() {
           <li>{renderTabButton('keywords', 'Keywords')}</li>
           <li>{renderTabButton('settings', 'Settings')}</li>
           <li>{renderTabButton('analytics', 'Analytics')}</li>
+          <li>{renderTabButton('notifications', 'Notifications')}</li>
+          <li>{renderTabButton('spamrules', 'Spam Rule Management')}</li>
+          <li>{renderTabButton('moderation', 'Moderation')}</li>
         </ul>
       </nav>
       <main className="flex-grow p-4 overflow-auto">{renderTabContent()}</main>

@@ -1,6 +1,9 @@
-// spamRules.js - Heuristic and pattern-based spam detection rules
+// utils/spamRules.js - Heuristic and pattern-based spam detection rules with dynamic custom rules support
 
-const spamPatterns = [
+import { getCustomSpamPatterns } from './storage.js';
+
+// Default static spam patterns
+const defaultSpamPatterns = [
   /whatsapp/i,
   /send money/i,
   /donate/i,
@@ -20,14 +23,33 @@ function normalizeText(text) {
     .replace(/4/g, 'a')
     .replace(/5/g, 's')
     .replace(/7/g, 't')
-    .replace(/@/g, 'a')
+    .replace(/g/g, 'a')
     .replace(/\$/g, 's')
     .replace(/[^a-z0-9 ]/g, '');
 }
 
-function isSpam(text) {
-  const normalized = normalizeText(text);
-  return spamPatterns.some(pattern => pattern.test(normalized));
+// Async function to get combined spam patterns (custom + default)
+async function getSpamPatterns() {
+  const customPatternsStrings = await getCustomSpamPatterns();
+  let customPatterns = [];
+  if (customPatternsStrings && Array.isArray(customPatternsStrings)) {
+    customPatterns = customPatternsStrings.map(str => {
+      try {
+        return new RegExp(str, 'i');
+      } catch (e) {
+        console.warn('Invalid custom spam pattern:', str);
+        return null;
+      }
+    }).filter(p => p !== null);
+  }
+  return [...customPatterns, ...defaultSpamPatterns];
 }
 
-export { isSpam, normalizeText, spamPatterns };
+// Async function to check if text is spam
+async function isSpam(text) {
+  const normalized = normalizeText(text);
+  const patterns = await getSpamPatterns();
+  return patterns.some(pattern => pattern.test(normalized));
+}
+
+export { isSpam, normalizeText, getSpamPatterns };

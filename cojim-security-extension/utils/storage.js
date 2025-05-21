@@ -1,25 +1,30 @@
-// storage.js - Modular storage logic for flagged data and settings
-
 const STORAGE_KEYS = {
-  FLAGGED_COMMENTS: 'flaggedComments',
+  CUSTOM_SPAM_PATTERNS: 'customSpamPatterns',
   WHITELIST: 'whitelist',
-  BLACKLIST: 'blacklist',
-  SETTINGS: 'settings',
-  TARGET_ACCOUNTS: 'targetAccounts',
+  BLACKLIST: 'blacklist', // <-- New
 };
 
-async function getTargetAccounts() {
-  return (await getStorage(STORAGE_KEYS.TARGET_ACCOUNTS)) || { youtube: '', facebook: '' };
+// Use local storage instead of sync
+async function getCustomSpamPatterns() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get([STORAGE_KEYS.CUSTOM_SPAM_PATTERNS], (result) => {
+      resolve(result[STORAGE_KEYS.CUSTOM_SPAM_PATTERNS] || []);
+    });
+  });
 }
 
-async function setTargetAccounts(accounts) {
-  await setStorage(STORAGE_KEYS.TARGET_ACCOUNTS, accounts);
+async function setCustomSpamPatterns(patterns) {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ [STORAGE_KEYS.CUSTOM_SPAM_PATTERNS]: patterns }, () => {
+      resolve();
+    });
+  });
 }
 
 async function getStorage(key) {
   return new Promise((resolve) => {
     chrome.storage.local.get([key], (result) => {
-      resolve(result[key] || null);
+      resolve(result[key]);
     });
   });
 }
@@ -32,20 +37,4 @@ async function setStorage(key, value) {
   });
 }
 
-async function addFlaggedComment(comment) {
-  const comments = (await getStorage(STORAGE_KEYS.FLAGGED_COMMENTS)) || [];
-  comments.push(comment);
-  await setStorage(STORAGE_KEYS.FLAGGED_COMMENTS, comments);
-}
-
-async function getFlaggedComments() {
-  return (await getStorage(STORAGE_KEYS.FLAGGED_COMMENTS)) || [];
-}
-
-export {
-  STORAGE_KEYS,
-  getStorage,
-  setStorage,
-  addFlaggedComment,
-  getFlaggedComments,
-};
+export { getCustomSpamPatterns, setCustomSpamPatterns, getStorage, setStorage, STORAGE_KEYS };

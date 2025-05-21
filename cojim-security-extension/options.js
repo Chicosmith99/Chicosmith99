@@ -1,80 +1,57 @@
-const browserAPI = window.browser || window.chrome;
+import { getStorage, setStorage, STORAGE_KEYS } from '../utils/storage.js';
 
-const whitelistList = document.getElementById('whitelist');
-const blacklistList = document.getElementById('blacklist');
+document.addEventListener('DOMContentLoaded', () => {
+  const whitelistInput = document.getElementById('whitelistInput');
+  const addWhitelistBtn = document.getElementById('addWhitelistBtn');
+  const whitelistList = document.getElementById('whitelistList');
 
-const whitelistInput = document.getElementById('whitelistInput');
-const blacklistInput = document.getElementById('blacklistInput');
+  const blacklistInput = document.getElementById('blacklistInput');
+  const addBlacklistBtn = document.getElementById('addBlacklistBtn');
+  const blacklistList = document.getElementById('blacklistList');
 
-const WHITELIST_KEY = 'whitelistUsers';
-const BLACKLIST_KEY = 'blacklistPatterns';
+  async function loadList(listKey, listElement) {
+    const list = (await getStorage(listKey)) || [];
+    listElement.innerHTML = '';
+    list.forEach((entry, index) => {
+      const li = document.createElement('li');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = entry;
+      input.addEventListener('change', async () => {
+        list[index] = input.value.trim();
+        await setStorage(listKey, list);
+      });
 
-function saveListToStorage(key, list) {
-  browserAPI.storage.local.set({ [key]: list });
-}
+      const delBtn = document.createElement('button');
+      delBtn.textContent = 'Delete';
+      delBtn.addEventListener('click', async () => {
+        list.splice(index, 1);
+        await setStorage(listKey, list);
+        await loadList(listKey, listElement);
+      });
 
-function loadListFromStorage(key, renderFn) {
-  browserAPI.storage.local.get([key], (result) => {
-    const items = result[key] || [];
-    renderFn(items);
-  });
-}
+      li.appendChild(input);
+      li.appendChild(delBtn);
+      listElement.appendChild(li);
+    });
+  }
 
-function renderList(listElement, items, removeFn) {
-  listElement.innerHTML = '';
-  items.forEach((item, index) => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    const removeBtn = document.createElement('button');
-    removeBtn.textContent = 'Remove';
-    removeBtn.onclick = () => removeFn(index);
-    li.appendChild(removeBtn);
-    listElement.appendChild(li);
-  });
-}
+  async function addEntry(inputEl, listKey, listElement) {
+    const val = inputEl.value.trim();
+    if (!val) return;
+    const list = (await getStorage(listKey)) || [];
+    list.push(val);
+    await setStorage(listKey, list);
+    inputEl.value = '';
+    await loadList(listKey, listElement);
+  }
 
-function addWhitelistEntry() {
-  const value = whitelistInput.value.trim();
-  if (!value) return;
-  browserAPI.storage.local.get([WHITELIST_KEY], (result) => {
-    const list = result[WHITELIST_KEY] || [];
-    list.push(value);
-    saveListToStorage(WHITELIST_KEY, list);
-    renderList(whitelistList, list, removeWhitelistEntry);
-    whitelistInput.value = '';
-  });
-}
+  addWhitelistBtn.addEventListener('click', () =>
+    addEntry(whitelistInput, STORAGE_KEYS.WHITELIST, whitelistList)
+  );
 
-function addBlacklistEntry() {
-  const value = blacklistInput.value.trim();
-  if (!value) return;
-  browserAPI.storage.local.get([BLACKLIST_KEY], (result) => {
-    const list = result[BLACKLIST_KEY] || [];
-    list.push(value);
-    saveListToStorage(BLACKLIST_KEY, list);
-    renderList(blacklistList, list, removeBlacklistEntry);
-    blacklistInput.value = '';
-  });
-}
-
-function removeWhitelistEntry(index) {
-  browserAPI.storage.local.get([WHITELIST_KEY], (result) => {
-    const list = result[WHITELIST_KEY] || [];
-    list.splice(index, 1);
-    saveListToStorage(WHITELIST_KEY, list);
-    renderList(whitelistList, list, removeWhitelistEntry);
-  });
-}
-
-function removeBlacklistEntry(index) {
-  browserAPI.storage.local.get([BLACKLIST_KEY], (result) => {
-    const list = result[BLACKLIST_KEY] || [];
-    list.splice(index, 1);
-    saveListToStorage(BLACKLIST_KEY, list);
-    renderList(blacklistList, list, removeBlacklistEntry);
-  });
-}
-
-// Load lists on page load
-loadListFromStorage(WHITELIST_KEY, (items) => renderList(whitelistList, items, removeWhitelistEntry));
-loadListFromStorage(BLACKLIST_KEY, (items) => renderList(blacklistList, items, removeBlacklistEntry));
+    addBlacklistBtn.addEventListener('click', () =>
+      addEntry(blacklistInput, STORAGE_KEYS.BLACKLIST, blacklistList)
+    );
+  
+  }); // <-- Add this closing brace to end the DOMContentLoaded callback
