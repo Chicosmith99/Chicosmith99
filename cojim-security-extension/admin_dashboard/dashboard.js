@@ -1,8 +1,5 @@
 import { getStorage, setStorage } from '../utils/storage.js';
 
-
-import { getStorage, setStorage } from '../utils/storage.js';
-
 document.addEventListener('DOMContentLoaded', () => {
   const dashboardContent = document.getElementById('dashboard-content');
   const navLinks = document.querySelectorAll('nav ul li a');
