@@ -6,19 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const darkModeToggle = document.getElementById('darkModeToggle');
 
   // Load dark mode preference from localStorage
-  if (localStorage.getItem('darkMode') === 'enabled') {
-    document.body.classList.add('dark-mode');
-    }
-  });
+  // Always enable dark mode
+  document.body.classList.add('dark-mode');
 
-  darkModeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    if (document.body.classList.contains('dark-mode')) {
-      localStorage.setItem('darkMode', 'enabled');
-    } else {
-      localStorage.setItem('darkMode', 'disabled');
-    }
-  });
+  // Disable the dark mode toggle button
+  if (darkModeToggle) {
+    darkModeToggle.disabled = true;
+    darkModeToggle.title = "Dark mode is permanently enabled";
+  }
 
   async function loadYouTubeComments() {
     const comments = await getStorage('flaggedComments');
