@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (darkModeToggle) {
     darkModeToggle.disabled = true;
     darkModeToggle.title = "Dark mode is permanently enabled";
-  }
+    }
+  });
 
   async function loadYouTubeComments() {
     const comments = await getStorage('flaggedComments');
