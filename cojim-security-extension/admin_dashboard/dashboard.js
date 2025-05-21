@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load dark mode preference from localStorage
   if (localStorage.getItem('darkMode') === 'enabled') {
     document.body.classList.add('dark-mode');
-  }
+    }
+  });
 
   darkModeToggle.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
