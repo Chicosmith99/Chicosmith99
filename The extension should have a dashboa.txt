@@ -1,0 +1,1 @@
+The extension should have a dashboard that will be accessed by the admin (Me) that will enable me see every flagged comments. The flagged comments will have a 24 hours countdown, if not reviewed the comments on the dashboard will be automatically deleted permanently. 

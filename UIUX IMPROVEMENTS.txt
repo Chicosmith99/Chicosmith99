@@ -1,0 +1,85 @@
+UI/UX IMPROVEMENTS
+
+1. Unified Sidebar Navigation
+
+Instead of separate HTML pages for each tab, use a single-page UI with a sidebar or top nav:
+
+* Sections: Dashboard, Flagged Comments, Reports, Whitelist, Keywords, Settings, Analytics
+* Use `<div>`s shown/hidden via JavaScript rather than navigating across HTML files.
+
+2. Consistent Styling
+
+* Use a CSS framework like [Tailwind CSS](https://tailwindcss.com) or [Bootstrap](https://getbootstrap.com) for:
+
+  * Uniform margins, paddings, font sizes
+  * Mobile responsiveness
+  * Modern button/input styles
+* Replace any inline styles (e.g., `style="width: 100%"`) with proper CSS classes.
+
+3. Dark/Light Mode Toggle
+
+* Add a toggle in settings to allow dark/light themes.
+* Use CSS variables to control themes dynamically.
+
+4. Interactive Comment Viewer
+
+* In the Flagged Comments tab:
+
+  * Show comments in cards with: user avatar, comment text, platform icon, reason, and timestamp.
+  * Add buttons: Review, Mark as Safe, Delete Now.
+
+5. Countdown UI
+
+* Show a "time left" badge on each flagged comment ( `Expires in 24 hours`).
+* Color-code urgency (green → yellow → red).
+
+
+
+ FEATURE ARCHITECTURE SUGGESTIONS
+
+ 1. Central Comment Store
+
+* Create a unified JS module (`commentManager.js`) to handle:
+
+  * Saving
+  * Loading
+  * Filtering
+  * Updating expiration
+  * Deletion logic (after 24 Hours)
+
+2. Platform Segregation
+
+* Each comment should carry metadata:
+
+  ```json
+  {
+    "text": "This is spam",
+    "platform": "YouTube",
+    "username": "scammer99",
+    "profileUrl": "...",
+    "timestamp": "...",
+    "flaggedReason": "Contains suspicious link",
+    "expiresAt": "2025-06-07T14:30:00Z"
+  }
+  ```
+* Filter by platform via dropdown or tabs.
+
+3. Export & Backup
+
+* Add a “Download Data” button in Reports or Settings:
+
+  * Export flagged comments to CSV or JSON
+  * Optionally integrate with Google Drive or Dropbox (for advanced use)
+
+4. Notifications
+
+* Show badge count on the extension icon for unreviewed flags.
+* Optional: integrate with browser notification API.
+
+ 5. Role-Based Access (Future Proofing)
+
+* If you plan to share this with team members, prepare the dashboard to support:
+
+  * Admin (full access)
+  * Reviewer (comment review only)
+  * Viewer (read-only logs)

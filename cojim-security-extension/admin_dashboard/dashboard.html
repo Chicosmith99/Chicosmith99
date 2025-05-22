@@ -19,9 +19,16 @@
         <li><a href="#accounts">Flagged Accounts</a></li>
       </ul>
     </nav>
-    <section id="dashboard-content">
-      <p>Select a tab to view flagged content and reports.</p>
-    </section>
+  <section id="dashboard-content">
+    <p>Select a tab to view flagged content and reports.</p>
+  </section>
+
+  <div id="flagged-words-manager" style="display:none;">
+    <h2>Flagged Words Manager</h2>
+    <input type="text" id="newFlaggedWord" placeholder="Enter word or phrase to flag" />
+    <button id="addFlaggedWordBtn">Add Flagged Word</button>
+    <ul id="flaggedWordsList"></ul>
+  </div>
   </div>
   <script src="dashboard.js"></script>
 <div id="whitelist-manager">
