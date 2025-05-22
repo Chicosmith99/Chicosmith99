@@ -10,6 +10,7 @@ import BlockedAccounts from './components/BlockedAccounts';
 import NotificationManager from './components/NotificationManager.jsx';
 import SpamRuleManager from './components/SpamRuleManager.jsx';
 import ModerationWorkflow from './components/ModerationWorkflow.jsx';
+import logo from '../icons/City of Jesus Ministry Logo.png';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -82,7 +83,7 @@ function App() {
   );
 
   return (
-    <div className="flex h-full w-full" style={{ backgroundImage: 'url(../icons/City of Jesus Ministry Logo.png)', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'contain' }}>
+    <div className="flex h-full w-full" style={{ backgroundImage: `url(${logo})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'contain' }}>
       <nav className="w-56 bg-gray-100 p-4">
         <h1 className="text-xl font-bold mb-6">COJIM Security</h1>
         <ul>
@@ -104,4 +105,3 @@ function App() {
   );
 }
 
-export default App;
