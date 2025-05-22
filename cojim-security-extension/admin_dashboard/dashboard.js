@@ -1,4 +1,4 @@
-import { getStorage, setStorage } from '../utils/storage.js';
+import { getStorage, setStorage, STORAGE_KEYS } from '../utils/storage.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const dashboardContent = document.getElementById('dashboard-content');
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadFlaggedWords() {
-    const flaggedWords = await getStorage('flaggedWords');
+    const flaggedWords = await getStorage(STORAGE_KEYS.CUSTOM_SPAM_PATTERNS);
     if (!flaggedWords || flaggedWords.length === 0) {
       dashboardContent.innerHTML = '<p>No flagged words found.</p>';
       return;
@@ -128,10 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const newWord = newFlaggedWordInput.value.trim();
       if (!newWord) return;
 
-      let flaggedWords = await getStorage('flaggedWords') || [];
+      let flaggedWords = await getStorage(STORAGE_KEYS.CUSTOM_SPAM_PATTERNS) || [];
       if (!flaggedWords.includes(newWord)) {
         flaggedWords.push(newWord);
-        await setStorage('flaggedWords', flaggedWords);
+        await setStorage(STORAGE_KEYS.CUSTOM_SPAM_PATTERNS, flaggedWords);
         renderFlaggedWordsList(flaggedWords);
         newFlaggedWordInput.value = '';
       }
