@@ -140,22 +140,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  
   // Add event listener for adding new whitelist domain
   const addWhitelistDomainBtn = document.getElementById('addWhitelistDomainBtn');
   const newWhitelistDomainInput = document.getElementById('newWhitelistDomain');
-
-  addWhitelistDomainBtn.addEventListener('click', async () => {
-    const newDomain = newWhitelistDomainInput.value.trim();
-    if (!newDomain) return;
-
-    let whitelist = await getStorage('whitelist') || [];
-    if (!whitelist.includes(newDomain)) {
-      whitelist.push(newDomain);
-      await setStorage('whitelist', whitelist);
-      await renderWhitelistEntries();
-      newWhitelistDomainInput.value = '';
-    }
-  });
+  
+  if (addWhitelistDomainBtn && newWhitelistDomainInput) {
+    addWhitelistDomainBtn.removeEventListener('click', () => {});
+  }
 
   navLinks.forEach(link => {
     link.addEventListener('click', async (e) => {
