@@ -82,7 +82,7 @@ function App() {
   );
 
   return (
-    <div className="flex h-full w-full">
+    <div className="flex h-full w-full" style={{ backgroundImage: 'url(../icons/City of Jesus Ministry Logo.png)', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'contain' }}>
       <nav className="w-56 bg-gray-100 p-4">
         <h1 className="text-xl font-bold mb-6">COJIM Security</h1>
         <ul>
