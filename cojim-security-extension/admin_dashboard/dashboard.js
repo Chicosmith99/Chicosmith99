@@ -102,40 +102,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     html += '</ul>';
     dashboardContent.innerHTML = html;
-
-    // Also render flagged words in the flagged words manager UI
-    renderFlaggedWordsList(flaggedWords);
   }
 
-  // Render flagged words list in the flagged words manager UI
-  function renderFlaggedWordsList(words) {
-    const flaggedWordsList = document.getElementById('flaggedWordsList');
-    if (!flaggedWordsList) return;
-    flaggedWordsList.innerHTML = '';
-    words.forEach(word => {
-      const li = document.createElement('li');
-      li.textContent = word;
-      flaggedWordsList.appendChild(li);
-    });
-  }
 
+  
   // Add event listener for adding new flagged word
   const addFlaggedWordBtn = document.getElementById('addFlaggedWordBtn');
   const newFlaggedWordInput = document.getElementById('newFlaggedWord');
-
+  
   if (addFlaggedWordBtn && newFlaggedWordInput) {
-    addFlaggedWordBtn.addEventListener('click', async () => {
-      const newWord = newFlaggedWordInput.value.trim();
-      if (!newWord) return;
-
-      let flaggedWords = await getStorage(STORAGE_KEYS.CUSTOM_SPAM_PATTERNS) || [];
-      if (!flaggedWords.includes(newWord)) {
-        flaggedWords.push(newWord);
-        await setStorage(STORAGE_KEYS.CUSTOM_SPAM_PATTERNS, flaggedWords);
-        renderFlaggedWordsList(flaggedWords);
-        newFlaggedWordInput.value = '';
-      }
-    });
+    addFlaggedWordBtn.removeEventListener('click', () => {});
   }
 
   async function loadFlaggedAccounts() {
