@@ -4,14 +4,13 @@ import axios from 'axios';
 const GOOGLE_TRANSLATE_API_URL = 'https://translation.googleapis.com/language/translate/v2';
 
 /**
- * Translates text using Google Cloud Translation API.
+ * Translates text using Google Cloud Translation API with auto language detection.
  * @param {string} text - Text to translate.
  * @param {string} targetLang - Target language code (e.g., 'en').
  * @param {string} apiKey - Google Cloud API key.
- * @param {string|null} sourceLang - Optional source language code.
- * @returns {Promise<{ translatedText: string, detectedSourceLanguage?: string }>}
+ * @returns {Promise<{ translatedText: string, detectedSourceLanguage: string }>}
  */
-export async function translateText(text, targetLang = 'en', apiKey, sourceLang = null) {
+export async function translateText(text, targetLang = 'en', apiKey) {
   if (!apiKey) throw new Error('Missing Google API key.');
   if (!text || typeof text !== 'string') throw new Error('Text to translate must be a string.');
   if (!targetLang || typeof targetLang !== 'string') throw new Error('Target language must be a string.');
@@ -22,8 +21,8 @@ export async function translateText(text, targetLang = 'en', apiKey, sourceLang 
       {
         q: text,
         target: targetLang,
-        format: 'text',
-        ...(sourceLang && { source: sourceLang }),
+        format: 'text'
+        // Notice: no 'source' passed = triggers auto-detection
       },
       {
         params: { key: apiKey },
@@ -36,7 +35,7 @@ export async function translateText(text, targetLang = 'en', apiKey, sourceLang 
 
     return {
       translatedText: translation.translatedText,
-      detectedSourceLanguage: translation.detectedSourceLanguage,
+      detectedSourceLanguage: translation.detectedSourceLanguage || 'undetected',
     };
   } catch (error) {
     const msg = error.response?.data?.error?.message || error.message;
