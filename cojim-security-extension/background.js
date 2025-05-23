@@ -5,6 +5,7 @@ import {
   autoDeleteOldComments
 } from './utils/commentManager.js';
 import { notifyAdmin } from './utils/notifier.js';
+import { translateText } from './utils/translation.js';
 
 const STORAGE_KEYS = {
   FLAGGED_COMMENTS: 'flaggedComments',
@@ -50,9 +51,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     switch (message.type) {
       case 'FLAG_COMMENT':
+        // Translate comment text before storing and notifying
+        const translatedText = await translateText(timestampedData.text);
+        timestampedData.translatedText = translatedText;
+
         await addFlaggedComment(timestampedData);
         const subject = timestampedData.highRisk ? 'High-Risk Flagged Comment Detected' : 'Flagged Comment Detected';
-        notifyAdmin(subject, timestampedData.text || 'A comment was flagged.');
+        notifyAdmin(subject, translatedText || timestampedData.text || 'A comment was flagged.');
         sendEmail(adminEmails, `COJIM Security Extension - ${subject}`, JSON.stringify(timestampedData, null, 2));
         console.log('Flagged comment processed:', timestampedData);
         sendResponse({ status: 'received' });
