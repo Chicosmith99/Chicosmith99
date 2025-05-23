@@ -15,6 +15,11 @@ const STORAGE_KEYS = {
 
 const adminEmails = ['info@cojim.org', 'christopherorjiministries@gmail.com'];
 
+// Notification queue and throttle control
+let notificationQueue = [];
+let notificationInProgress = false;
+const NOTIFICATION_THROTTLE_MS = 1000; // Minimum delay between notifications
+
 async function getStorage(key) {
   return new Promise((resolve) => {
     chrome.storage.local.get([key], (result) => {
@@ -42,6 +47,19 @@ function sendEmail(toAddresses, subject, body) {
   console.log('Body:', body);
 }
 
+function processNotificationQueue() {
+  if (notificationInProgress || notificationQueue.length === 0) {
+    return;
+  }
+  notificationInProgress = true;
+  const { subject, message } = notificationQueue.shift();
+  notifyAdmin(subject, message);
+  setTimeout(() => {
+    notificationInProgress = false;
+    processNotificationQueue();
+  }, NOTIFICATION_THROTTLE_MS);
+}
+
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   try {
     const timestampedData = {
@@ -57,7 +75,11 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
         await addFlaggedComment(timestampedData);
         const subject = timestampedData.highRisk ? 'High-Risk Flagged Comment Detected' : 'Flagged Comment Detected';
-        notifyAdmin(subject, translatedText || timestampedData.text || 'A comment was flagged.');
+        const notificationMessage = translatedText || timestampedData.text || 'A comment was flagged.';
+        // Queue notification for throttling
+        notificationQueue.push({ subject, message: notificationMessage });
+        processNotificationQueue();
+
         sendEmail(adminEmails, `COJIM Security Extension - ${subject}`, JSON.stringify(timestampedData, null, 2));
         console.log('Flagged comment processed:', timestampedData);
         sendResponse({ status: 'received' });
@@ -65,13 +87,15 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
       case 'FLAG_LIVE_STREAM':
         await appendToStorage(STORAGE_KEYS.LIVE_STREAMS, timestampedData);
-        notifyAdmin('Live Stream Detected', `Live stream detected on ${timestampedData.platform}`);
+        notificationQueue.push({ subject: 'Live Stream Detected', message: `Live stream detected on ${timestampedData.platform}` });
+        processNotificationQueue();
         sendResponse({ status: 'received' });
         break;
 
       case 'FLAG_UPLOAD_POST':
         await appendToStorage(STORAGE_KEYS.UPLOAD_POSTS, timestampedData);
-        notifyAdmin('Upload Post Detected', `Upload post detected on ${timestampedData.platform}`);
+        notificationQueue.push({ subject: 'Upload Post Detected', message: `Upload post detected on ${timestampedData.platform}` });
+        processNotificationQueue();
         sendResponse({ status: 'received' });
         break;
 
