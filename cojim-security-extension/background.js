@@ -51,8 +51,9 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     switch (message.type) {
       case 'FLAG_COMMENT':
         await addFlaggedComment(timestampedData);
-        notifyAdmin('Flagged Comment Detected', timestampedData.text || 'A comment was flagged.');
-        sendEmail(adminEmails, 'COJIM Security Extension - Flagged Comment Alert', JSON.stringify(timestampedData, null, 2));
+        const subject = timestampedData.highRisk ? 'High-Risk Flagged Comment Detected' : 'Flagged Comment Detected';
+        notifyAdmin(subject, timestampedData.text || 'A comment was flagged.');
+        sendEmail(adminEmails, `COJIM Security Extension - ${subject}`, JSON.stringify(timestampedData, null, 2));
         console.log('Flagged comment processed:', timestampedData);
         sendResponse({ status: 'received' });
         break;

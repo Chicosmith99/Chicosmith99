@@ -1,4 +1,4 @@
-import { isSpam } from '../utils/spamRules.js';
+import { checkSpamStatus } from '../utils/spamRules.js';
 import { getTargetAccounts } from '../utils/storage.js';
 
 console.log('Facebook Scanner loaded');
@@ -14,7 +14,8 @@ async function scanComments() {
   const historicalComments = document.querySelectorAll('[aria-label="Comment"] div[dir="auto"] span');
   for (const commentEl of historicalComments) {
     const text = commentEl.textContent || '';
-    if (await isSpam(text)) {
+    const { spam, highRisk } = await checkSpamStatus(text);
+    if (spam) {
       chrome.runtime.sendMessage({
         type: 'FLAG_COMMENT',
         data: {
@@ -23,6 +24,7 @@ async function scanComments() {
           url: window.location.href,
           timestamp: Date.now(),
           info: 'Historical comment',
+          highRisk,
         }
       });
     }

@@ -1,5 +1,3 @@
-// utils/spamRules.js - Heuristic and pattern-based spam detection rules with dynamic custom rules support
-
 import { getCustomSpamPatterns } from './storage.js';
 
 // Default static spam patterns
@@ -11,6 +9,48 @@ const defaultSpamPatterns = [
   /click here/i,
   /http[s]?:\/\/[^\s]+/i,
   // Add more patterns as needed
+];
+
+// High-risk spam patterns for immediate flagging
+const highRiskPatterns = [
+  /pray/i,
+  /demonic/i,
+  /spiritual attack/i,
+  /breakthrough/i,
+  /evil people/i,
+  /power of evil/i,
+  /prayers/i,
+  /miracle/i,
+  /blessing/i,
+  /deliverance/i,
+  /satan/i,
+  /curse/i,
+  /witchcraft/i,
+  /prophecy/i,
+  /anointing/i,
+  /salvation/i,
+  /healing/i,
+  /spiritual realm/i,
+  /spiritual warfare/i,
+  /spiritual battle/i,
+  /spiritual forces/i,
+  /prayer request/i,
+  /pray for/i,
+  /pray against/i,
+  /pray to/i,
+  /pray with/i,
+  /pray over/i,
+  /pray up/i,
+  /pray down/i,
+  /pray hard/i,
+  /pray loud/i,
+  /pray strong/i,
+  /pray power/i,
+  /pray blessing/i,
+  /pray miracle/i,
+  /pray deliverance/i,
+  /pray salvation/i,
+  /pray healing/i,
 ];
 
 // Normalize text to catch obfuscations like "s3nd m0ney"
@@ -52,4 +92,17 @@ async function isSpam(text) {
   return patterns.some(pattern => pattern.test(normalized));
 }
 
-export { isSpam, normalizeText, getSpamPatterns };
+// Async function to check if text is high-risk spam
+async function isHighRiskSpam(text) {
+  const normalized = normalizeText(text);
+  return highRiskPatterns.some(pattern => pattern.test(normalized));
+}
+
+// Async function to check spam and high-risk status
+async function checkSpamStatus(text) {
+  const spam = await isSpam(text);
+  const highRisk = await isHighRiskSpam(text);
+  return { spam, highRisk };
+}
+
+export { isSpam, normalizeText, getSpamPatterns, isHighRiskSpam, checkSpamStatus };
