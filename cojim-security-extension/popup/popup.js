@@ -1,4 +1,5 @@
 import { getStorage, setStorage, STORAGE_KEYS } from '../utils/storage.js';
+import { calculateRiskScore, getRiskLevel } from '../utils/riskCalculator.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const navButtons = document.querySelectorAll('.nav-btn');
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.toggle('bg-gray-300', isActive);
       btn.classList.toggle('dark:bg-gray-700', isActive);
     });
+    updateRiskDisplay();
   }
 
   navButtons.forEach(btn => {
@@ -128,6 +130,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  async function updateRiskDisplay() {
+    const score = await calculateRiskScore();
+    const { level, color } = getRiskLevel(score);
+
+    let riskEl = document.getElementById('risk-score');
+    if (!riskEl) {
+      riskEl = document.createElement('div');
+      riskEl.id = 'risk-score';
+      riskEl.className = 'mb-4 font-semibold text-lg';
+      if (flaggedContainer.parentNode) {
+        flaggedContainer.parentNode.insertBefore(riskEl, flaggedContainer);
+      } else {
+        document.body.insertBefore(riskEl, document.body.firstChild);
+      }
+    }
+    riskEl.textContent = `🔥 Risk Level: ${level} (${score})`;
+    riskEl.style.color = color;
+  }
+
   // Load flagged comments on startup
   loadFlaggedComments();
+  updateRiskDisplay();
 });

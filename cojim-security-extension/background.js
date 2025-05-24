@@ -1,3 +1,30 @@
+import { fetchRemoteConfig } from './utils/remoteConfig.js';
+
+let remoteConfig = {
+  adminEmails: ['info@cojim.org'],
+  whitelist: [],
+  customSpamPatterns: [],
+  keywords: []
+};
+
+async function loadRemoteConfig() {
+  const data = await fetchRemoteConfig();
+  remoteConfig = { ...remoteConfig, ...data };
+  console.log('🔥 Remote config loaded:', remoteConfig);
+}
+
+loadRemoteConfig();
+// Reload every 10 minutes
+setInterval(loadRemoteConfig, 10 * 60 * 1000);
+
+// Replace all occurrences of adminEmails with remoteConfig.adminEmails, for example:
+
+// Old:
+// const adminEmails = ['info@cojim.org', 'christopherorjiministries@gmail.com'];
+// sendEmail(adminEmails, subject, body);
+
+// New:
+sendEmail(remoteConfig.adminEmails, subject, body);
 import {
   addFlaggedComment,
   getFlaggedComments,
