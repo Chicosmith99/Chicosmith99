@@ -12,7 +12,6 @@
     "https://www.facebook.com/*"
   ],
   "incognito": "spanning",
-
   "background": {
     "scripts": ["background.js"],
     "persistent": false
