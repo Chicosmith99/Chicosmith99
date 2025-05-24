@@ -9,11 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const addBlacklistBtn = document.getElementById('addBlacklistBtn');
   const blacklistList = document.getElementById('blacklistList');
 
+  // Load entries for whitelist or blacklist
   async function loadList(listKey, listElement) {
     const list = (await getStorage(listKey)) || [];
     listElement.innerHTML = '';
+
     list.forEach((entry, index) => {
       const li = document.createElement('li');
+
       const input = document.createElement('input');
       input.type = 'text';
       input.value = entry;
@@ -24,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const delBtn = document.createElement('button');
       delBtn.textContent = 'Delete';
+      delBtn.style.marginLeft = '8px';
       delBtn.addEventListener('click', async () => {
         list.splice(index, 1);
         await setStorage(listKey, list);
@@ -36,9 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Add new entry to whitelist or blacklist
   async function addEntry(inputEl, listKey, listElement) {
     const val = inputEl.value.trim();
     if (!val) return;
+
     const list = (await getStorage(listKey)) || [];
     list.push(val);
     await setStorage(listKey, list);
@@ -46,12 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
     await loadList(listKey, listElement);
   }
 
-  addWhitelistBtn.addEventListener('click', () =>
+  // Setup listeners
+  addWhitelistBtn?.addEventListener('click', () =>
     addEntry(whitelistInput, STORAGE_KEYS.WHITELIST, whitelistList)
   );
 
-    addBlacklistBtn.addEventListener('click', () =>
-      addEntry(blacklistInput, STORAGE_KEYS.BLACKLIST, blacklistList)
-    );
-  
-  }); // <-- Add this closing brace to end the DOMContentLoaded callback
+  addBlacklistBtn?.addEventListener('click', () =>
+    addEntry(blacklistInput, STORAGE_KEYS.BLACKLIST, blacklistList)
+  );
+
+  // Initial load
+  loadList(STORAGE_KEYS.WHITELIST, whitelistList);
+  loadList(STORAGE_KEYS.BLACKLIST, blacklistList);
+});

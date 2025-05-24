@@ -3,17 +3,18 @@
   "name": "COJIM Social Media Security Extension",
   "version": "3.0.0",
   "description": "Private-use extension for military-grade security monitoring of COJIM's social media accounts.",
-  "permissions": [ "https://studio.youtube.com/*",
-    "storage",
+  "permissions": [
     "tabs",
+    "storage",
     "notifications",
+    "https://studio.youtube.com/*",
     "https://www.youtube.com/*",
     "https://www.facebook.com/*"
   ],
-  "incognito": "spanning",
+  "incognito": true,
   "background": {
     "scripts": ["background.js"],
-    "persistent": true
+    "persistent": false
   },
   "content_scripts": [
     {
@@ -28,6 +29,7 @@
     }
   ],
   "browser_action": {
+    "default_title": "COJIM Security Panel",
     "default_popup": "popup/popup.html",
     "default_icon": {
       "48": "icons/City of Jesus Ministry Logo.png"
@@ -39,5 +41,11 @@
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "cojim-secure@yourdomain.org",
+      "strict_min_version": "91.0"
+    }
   }
 }

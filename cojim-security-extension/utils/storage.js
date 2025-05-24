@@ -1,13 +1,15 @@
 const STORAGE_KEYS = {
   CUSTOM_SPAM_PATTERNS: 'customSpamPatterns',
   WHITELIST: 'whitelist',
-  BLACKLIST: 'blacklist', // <-- New
+  BLACKLIST: 'blacklist',
 };
 
-// Use local storage instead of sync
+// Polyfill: browser fallback
+const storage = typeof browser !== 'undefined' ? browser.storage.local : chrome.storage.local;
+
 async function getCustomSpamPatterns() {
   return new Promise((resolve) => {
-    chrome.storage.local.get([STORAGE_KEYS.CUSTOM_SPAM_PATTERNS], (result) => {
+    storage.get([STORAGE_KEYS.CUSTOM_SPAM_PATTERNS], (result) => {
       resolve(result[STORAGE_KEYS.CUSTOM_SPAM_PATTERNS] || []);
     });
   });
@@ -15,7 +17,7 @@ async function getCustomSpamPatterns() {
 
 async function setCustomSpamPatterns(patterns) {
   return new Promise((resolve) => {
-    chrome.storage.local.set({ [STORAGE_KEYS.CUSTOM_SPAM_PATTERNS]: patterns }, () => {
+    storage.set({ [STORAGE_KEYS.CUSTOM_SPAM_PATTERNS]: patterns }, () => {
       resolve();
     });
   });
@@ -23,7 +25,7 @@ async function setCustomSpamPatterns(patterns) {
 
 async function getStorage(key) {
   return new Promise((resolve) => {
-    chrome.storage.local.get([key], (result) => {
+    storage.get([key], (result) => {
       resolve(result[key]);
     });
   });
@@ -31,10 +33,16 @@ async function getStorage(key) {
 
 async function setStorage(key, value) {
   return new Promise((resolve) => {
-    chrome.storage.local.set({ [key]: value }, () => {
+    storage.set({ [key]: value }, () => {
       resolve();
     });
   });
 }
 
-export { getCustomSpamPatterns, setCustomSpamPatterns, getStorage, setStorage, STORAGE_KEYS };
+export {
+  getCustomSpamPatterns,
+  setCustomSpamPatterns,
+  getStorage,
+  setStorage,
+  STORAGE_KEYS
+};

@@ -5,14 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>COJIM Extension Settings</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 1rem; background: #f7f7f7; }
-    h1 { margin-bottom: 1rem; }
-    input[type="text"] { padding: 0.4rem; width: 250px; margin-right: 0.5rem; }
-    button { padding: 0.4rem 1rem; cursor: pointer; }
-    ul { list-style: none; padding-left: 0; }
-    li { margin: 0.5rem 0; display: flex; align-items: center; }
-    li input { flex: 1; margin-right: 0.5rem; }
-    .section { margin-bottom: 2rem; }
+    :root {
+      --bg-light: #f7f7f7;
+      --bg-dark: #1e1e1e;
+      --text-light: #000;
+      --text-dark: #fff;
+      --input-bg-light: #fff;
+      --input-bg-dark: #2a2a2a;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      padding: 1rem;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+    }
+
+    input[type="text"] {
+      padding: 0.4rem;
+      width: 250px;
+      margin-right: 0.5rem;
+      background: var(--input-bg-light);
+      color: var(--text-light);
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    body.dark input[type="text"] {
+      background: var(--input-bg-dark);
+      color: var(--text-dark);
+      border: 1px solid #555;
+    }
+
+    button {
+      padding: 0.4rem 1rem;
+      cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    li {
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+    }
+
+    li input {
+      flex: 1;
+      margin-right: 0.5rem;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .toggle-theme {
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -32,10 +107,13 @@
     <ul id="blacklistList"></ul>
   </div>
 
+  <div class="toggle-theme">
+    <label for="dark-mode-toggle">
+      <input type="checkbox" id="dark-mode-toggle" />
+      Dark Mode
+    </label>
+  </div>
+
   <script type="module" src="options.js"></script>
 </body>
 </html>
-<label>
-  <input type="checkbox" id="dark-mode-toggle" />
-  Dark Mode
-</label>

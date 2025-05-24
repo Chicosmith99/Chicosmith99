@@ -1,15 +1,15 @@
-// utils/commentManager.js
-
 const STORAGE_KEYS = {
   FLAGGED_COMMENTS: 'flaggedComments',
   WHITELIST: 'whitelistUsers',
   BLACKLIST: 'blacklistPatterns'
 };
 
-// Utility to get data from storage
+// Cross-browser storage
+const storage = typeof browser !== 'undefined' ? browser.storage.local : chrome.storage.local;
+
 async function getFromStorage(key) {
   return new Promise((resolve) => {
-    chrome.storage.local.get([key], (result) => {
+    storage.get([key], (result) => {
       resolve(result[key] || []);
     });
   });
@@ -17,7 +17,7 @@ async function getFromStorage(key) {
 
 async function setInStorage(key, value) {
   return new Promise((resolve) => {
-    chrome.storage.local.set({ [key]: value }, () => resolve());
+    storage.set({ [key]: value }, () => resolve());
   });
 }
 
@@ -61,7 +61,7 @@ export async function autoDeleteOldComments(days = 7) {
   return filtered;
 }
 
-// Utility functions to manage whitelist/blacklist
+// Whitelist / Blacklist management
 export async function updateWhitelist(users) {
   await setInStorage(STORAGE_KEYS.WHITELIST, users);
 }

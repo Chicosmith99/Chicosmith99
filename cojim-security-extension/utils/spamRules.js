@@ -1,6 +1,6 @@
 import { getCustomSpamPatterns } from './storage.js';
 
-// Default static spam patterns
+// Default general spam patterns (URLs, scams, promos)
 const defaultSpamPatterns = [
   /whatsapp/i,
   /send money/i,
@@ -8,10 +8,10 @@ const defaultSpamPatterns = [
   /free/i,
   /click here/i,
   /http[s]?:\/\/[^\s]+/i,
-  // Add more patterns as needed
+  // Extend as needed
 ];
 
-// High-risk spam patterns for immediate flagging
+// High-risk patterns (religious exploitation, sensitive terms)
 const highRiskPatterns = [
   /pray/i,
   /demonic/i,
@@ -53,7 +53,7 @@ const highRiskPatterns = [
   /pray healing/i,
 ];
 
-// Normalize text to catch obfuscations like "s3nd m0ney"
+// Normalize obfuscated characters in spam text (e.g. “s3nd m0ney”)
 function normalizeText(text) {
   return text
     .toLowerCase()
@@ -68,41 +68,47 @@ function normalizeText(text) {
     .replace(/[^a-z0-9 ]/g, '');
 }
 
-// Async function to get combined spam patterns (custom + default)
+// Combine default and custom patterns
 async function getSpamPatterns() {
-  const customPatternsStrings = await getCustomSpamPatterns();
-  let customPatterns = [];
-  if (customPatternsStrings && Array.isArray(customPatternsStrings)) {
-    customPatterns = customPatternsStrings.map(str => {
-      try {
-        return new RegExp(str, 'i');
-      } catch (e) {
-        console.warn('Invalid custom spam pattern:', str);
-        return null;
-      }
-    }).filter(p => p !== null);
-  }
-  return [...customPatterns, ...defaultSpamPatterns];
+  const customStrings = await getCustomSpamPatterns();
+  const custom = Array.isArray(customStrings)
+    ? customStrings
+        .map(str => {
+          try {
+            return new RegExp(str, 'i');
+          } catch (e) {
+            console.warn('Invalid custom spam pattern:', str);
+            return null;
+          }
+        })
+        .filter(Boolean)
+    : [];
+
+  return [...custom, ...defaultSpamPatterns];
 }
 
-// Async function to check if text is spam
+// Main detection methods
 async function isSpam(text) {
   const normalized = normalizeText(text);
   const patterns = await getSpamPatterns();
-  return patterns.some(pattern => pattern.test(normalized));
+  return patterns.some(p => p.test(normalized));
 }
 
-// Async function to check if text is high-risk spam
 async function isHighRiskSpam(text) {
   const normalized = normalizeText(text);
-  return highRiskPatterns.some(pattern => pattern.test(normalized));
+  return highRiskPatterns.some(p => p.test(normalized));
 }
 
-// Async function to check spam and high-risk status
 async function checkSpamStatus(text) {
   const spam = await isSpam(text);
   const highRisk = await isHighRiskSpam(text);
   return { spam, highRisk };
 }
 
-export { isSpam, normalizeText, getSpamPatterns, isHighRiskSpam, checkSpamStatus };
+export {
+  isSpam,
+  normalizeText,
+  getSpamPatterns,
+  isHighRiskSpam,
+  checkSpamStatus
+};

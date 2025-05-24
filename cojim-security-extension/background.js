@@ -7,6 +7,11 @@ import {
 import { notifyAdmin } from './utils/notifier.js';
 import { translateText } from './utils/translation.js';
 
+// Polyfill for browser compatibility
+if (typeof browser === "undefined") {
+  var browser = chrome;
+}
+
 const STORAGE_KEYS = {
   FLAGGED_COMMENTS: 'flaggedComments',
   LIVE_STREAMS: 'flaggedLiveStreams',
@@ -15,14 +20,13 @@ const STORAGE_KEYS = {
 
 const adminEmails = ['info@cojim.org', 'christopherorjiministries@gmail.com'];
 
-// Notification queue and throttle control
 let notificationQueue = [];
 let notificationInProgress = false;
-const NOTIFICATION_THROTTLE_MS = 1000; // Minimum delay between notifications
+const NOTIFICATION_THROTTLE_MS = 1000;
 
 async function getStorage(key) {
   return new Promise((resolve) => {
-    chrome.storage.local.get([key], (result) => {
+    browser.storage.local.get([key], (result) => {
       resolve(result[key] || []);
     });
   });
@@ -30,7 +34,7 @@ async function getStorage(key) {
 
 async function setStorage(key, value) {
   return new Promise((resolve) => {
-    chrome.storage.local.set({ [key]: value }, () => resolve());
+    browser.storage.local.set({ [key]: value }, () => resolve());
   });
 }
 
@@ -41,16 +45,13 @@ async function appendToStorage(key, item) {
 }
 
 function sendEmail(toAddresses, subject, body) {
-  // Replace this with a call to your backend or email service API
   console.log('Pretend email to:', toAddresses);
   console.log('Subject:', subject);
   console.log('Body:', body);
 }
 
 function processNotificationQueue() {
-  if (notificationInProgress || notificationQueue.length === 0) {
-    return;
-  }
+  if (notificationInProgress || notificationQueue.length === 0) return;
   notificationInProgress = true;
   const { subject, message } = notificationQueue.shift();
   notifyAdmin(subject, message);
@@ -60,7 +61,7 @@ function processNotificationQueue() {
   }, NOTIFICATION_THROTTLE_MS);
 }
 
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   try {
     const timestampedData = {
       ...message.data,
@@ -69,14 +70,12 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     switch (message.type) {
       case 'FLAG_COMMENT':
-        // Translate comment text before storing and notifying
-        const translatedText = await translateText(timestampedData.text);
-        timestampedData.translatedText = translatedText;
+        const translated = await translateText(timestampedData.text);
+        timestampedData.translatedText = translated.translatedText;
 
         await addFlaggedComment(timestampedData);
         const subject = timestampedData.highRisk ? 'High-Risk Flagged Comment Detected' : 'Flagged Comment Detected';
-        const notificationMessage = translatedText || timestampedData.text || 'A comment was flagged.';
-        // Queue notification for throttling
+        const notificationMessage = translated.translatedText || timestampedData.text || 'A comment was flagged.';
         notificationQueue.push({ subject, message: notificationMessage });
         processNotificationQueue();
 
@@ -108,7 +107,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         sendResponse({ status: 'ignored', reason: 'Unknown message type' });
     }
 
-    return true; // Keeps message channel open for async sendResponse
+    return true;
   } catch (error) {
     console.error('Error handling message:', message.type, error);
     sendResponse({ status: 'error', message: error.message });
@@ -116,7 +115,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
 });
 
-// Cleanup old data
 autoDeleteOldComments()
   .then(filtered => {
     console.log('Auto-deleted old flagged comments, remaining:', filtered.length);
