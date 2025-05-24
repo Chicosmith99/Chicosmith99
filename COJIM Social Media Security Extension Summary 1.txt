@@ -1,0 +1,151 @@
+ COJIM Social Media Security Extension
+
+ Private Browser Extension for Monitoring & Securing the Ministry's Digital Presence
+
+
+
+🙏 Overview
+
+This project is a custom-built browser extension designed exclusively for the digital security and media integrity of Christopher Orji Ministries (COJIM). It safeguards COJIM's official YouTube and Facebook accounts against impersonation, scams, spam, and offensive content — all in real time.
+
+> Inspired by the Prophet’s divine mandate and digital expansion, this tool ensures the ministry’s online spaces remain pure, protected, and professionally managed.
+
+
+
+ 🎯 Primary Objectives
+
+1. Military-Grade Monitoring
+
+The extension persistently scans COJIM’s Facebook and YouTube environments in the background — ensuring that no malicious or inappropriate comment goes unnoticed.
+It identifies:
+
+* Fraudulent donation requests
+* WhatsApp scams
+* Religious manipulation
+* Bot-driven spam
+* Phishing links
+
+
+ 2. Real-Time Comment Moderation
+
+Using advanced detection techniques, it monitors:
+
+* 🟦 Facebook comment sections
+* 🔴 YouTube videos (including livestreams)
+
+It flags and logs:
+
+* Dangerous keywords (e.g. “WhatsApp”, “donate”, “send money”)
+* Obfuscated language (e.g. “s3nd m0ney”, “wh\@ts\@pp”)
+* Links and impersonation attempts
+* Repeated offenders
+
+🚨 Flagged content triggers:
+
+* Admin notifications
+* Storage in secure internal logs (locally & via Firebase)
+* Translation & sentiment analysis
+
+
+
+ 3. Automated Alert & Reporting System
+
+Each flagged message automatically:
+
+* Triggers a browser/admin notification
+* Translates content (using Google Cloud Translate)
+* Classifies sentiment (positive/neutral/negative)
+* Generates a structured report including:
+
+  * Comment text
+  * Platform (YouTube/Facebook)
+  * Timestamp
+  * Detected language and sentiment
+  * Reason for flagging
+  * Optional source profiling (future-ready)
+
+
+
+🖥️ Extension Features & UI
+
+Extension Panel (Popup Interface)
+
+Accessible via the browser, with intuitive tabs:
+
+* **📌 Dashboard – Activity overview
+* **🚩 Flagged Comments – View & analyze all flagged content
+* **🔐 Whitelist Manager – Add approved domains
+* **🧹 Keyword Watchlist – Define harmful terms to monitor
+* **📊 Analytics – Risk trends, frequency maps
+* **⚙️ Settings – Dark mode, toggle controls, sync tools
+* **📂 Admin Dashboard – Open advanced console in a new tab
+
+
+ 🔧 How It Works
+
+* Content scripts scan Facebook and YouTube pages using DOM observation and mutation listeners
+* Background scripts process data, classify risks, and coordinate alerts
+* Data is synced with Firebase Firestore (under the private COJIM project) for secure storage
+* A remote config panel allows trusted admins to manage keywords, emails, and rules
+
+
+ 🔒 Advanced Security Logic
+
+| Feature                      | Description                                                                |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| Smart Pattern Matching       | Flags dangerous expressions using a combination of regex and normalization |
+| Repeated Offender Profiling  | Tracks frequent spammers across sessions                                   |
+| Google Translate API         | Detects and translates foreign language comments automatically             |
+| Sentiment Classification     | Helps determine emotional tone of flagged content                          |
+| Real-Time Notification Queue | Prevents spamming the admin; alerts throttle every second                  |
+
+
+ 🧠 Admin Dashboard (Firebase Hosted)
+
+* URL: [https://cojim-social-media-security-e.web.app](https://cojim-social-media-security-e.web.app)
+* Allows real-time control over:
+
+  * Admin email list
+  * Custom spam patterns
+  * Blacklisted domains
+  * Keyword watchlist
+* Built with Firebase Hosting + Firestore for real-time log syncing
+
+
+ 📦 Built With:
+
+* JavaScript (Chrome + Firefox Extension APIs)
+* Firebase (Auth, Firestore, Hosting)
+* TailwindCSS (UI styling)
+* Google Cloud Translation API
+* MutationObservers (Live scanning)
+* Local Storage APIs
+* Modular utility design for future integration (TensorFlow\.js-ready)
+
+
+ 🛠 Future Enhancements
+
+| Upcoming Feature            | Purpose                                          |
+| --------------------------- | ------------------------------------------------ |
+| GPT Policy Assistant        | AI-based decision-making for grey-area content   |
+| Auto-delete & auto-block    | Auto-remove comments or block repeat offenders   |
+| Weekly Email Reports        | Summary of flagged activity sent to admin inbox  |
+| Extension Lock              | Passcode-protected access to settings/admin tabs |
+| Comment heatmap & analytics | See when and where risks spike visually          |
+
+
+ ✅ Status: Phase 4 Complete
+
+* Real-time scanning works ✅
+* Translations & sentiment detection integrated ✅
+* Admin dashboard hosted ✅
+* Firebase Firestore used for secure flag logs ✅
+* Extension runs reliably in Chrome & Firefox ✅
+
+
+🙌 Final Word
+
+The COJIM Social Media Security Extension is not just a tool — it is a digital shield, forged in purpose and powered by discernment.
+
+Let this be a foundation for future spiritual and digital growth, where the ministry’s message flows freely — undisturbed, unmanipulated, and unwavering.
+Shalom.

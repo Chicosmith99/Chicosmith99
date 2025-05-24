@@ -1,0 +1,72 @@
+Here’s the COJIM Security Extension Summary written in plain, pastoral-friendly language for the Prophet or any ministry leader:
+
+
+
+ 📖 COJIM Security Extension – Layman’s Summary**
+
+✨ What Is It?
+
+This is a custom tool built specially for COJIM's official Facebook and YouTube pages. It works like a digital security guard, always watching and protecting the ministry from:
+
+* Fake comments
+* Scams asking for donations
+* People pretending to represent the church
+* Evil or misleading messages
+
+
+ 🎯 Why Was It Built?
+
+The internet is filled with bad actors. Some try to **trick the church’s followers, especially during live videos or under powerful sermons.
+This extension ensures that God’s work remains pure online**, just like it is in person.
+
+
+ 🔍 What Does It Do?
+
+**The extension does 3 big things automatically:**
+
+1. **Watches YouTube and Facebook every second**, even during livestreams.
+2. **Detects bad or suspicious comments**, including:
+
+   * People asking for money
+   * Strange links or WhatsApp numbers
+   * Religious manipulation or spiritual confusion
+3. **Takes action when danger is found:**
+
+   * Saves the comment privately
+   * Alerts the admin
+   * Logs the time and reason
+
+
+ 🌐 Where Is the Control Panel?
+
+We built a secure online dashboard where you (or someone trusted) can:
+
+* View all flagged comments
+* Add or remove trusted words and websites
+* Add new admin emails
+* Review custom spam rules
+
+🔐 Admin Dashboard URL:
+[https://cojim-social-media-security-e.web.app](https://cojim-social-media-security-e.web.app)
+
+
+ 🚨 Extra Features
+
+* **Translates foreign comments** so nothing is hidden by language
+* **Checks the emotion** of a comment (positive or negative)
+* **Identifies high-risk content** using intelligent rules
+* **Only alerts trusted admins** when necessary
+
+
+ 🧠 Who Built It?
+
+This was lovingly and professionally built by the Media Team, digital stewards serving this divine mission with skills and reverence.
+
+
+
+🛡️ Why This Matters
+
+As COJIM continues to grow across the world, this tool protects the online altar — making sure only truth, healing, and light pass through.
+
+> “Watch and pray...” now includes watching over the platform where souls are reached. 
+Shalom.
