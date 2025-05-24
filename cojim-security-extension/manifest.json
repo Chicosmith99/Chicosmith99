@@ -3,8 +3,6 @@
   "name": "COJIM Social Media Security Extension",
   "version": "3.0.0",
   "description": "Private-use extension for military-grade security monitoring of COJIM's social media accounts.",
-
-  // ✅ CRITICAL PERMISSIONS
   "permissions": [
     "tabs",
     "storage",
@@ -13,17 +11,11 @@
     "https://www.youtube.com/*",
     "https://www.facebook.com/*"
   ],
-
-  // ✅ ENABLE ACROSS NORMAL + INCOGNITO WINDOWS (REQUIRED BY FIREFOX)
   "incognito": "spanning",
-
-  // ✅ BACKGROUND SERVICE HANDLER
   "background": {
     "scripts": ["background.js"],
     "persistent": false
   },
-
-  // ✅ CONTENT SCRIPTS THAT LISTEN FOR COMMENT ACTIVITY
   "content_scripts": [
     {
       "matches": ["https://studio.youtube.com/*"],
@@ -36,8 +28,6 @@
       "run_at": "document_end"
     }
   ],
-
-  // ✅ EXTENSION UI SETTINGS
   "browser_action": {
     "default_title": "COJIM Security Panel",
     "default_popup": "popup/popup.html",
@@ -45,19 +35,13 @@
       "48": "icons/City of Jesus Ministry Logo.png"
     }
   },
-
-  // ✅ EXTENSION ICON
   "icons": {
     "48": "icons/City of Jesus Ministry Logo.png"
   },
-
-  // ✅ SETTINGS PAGE (OPTIONS PANEL)
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
   },
-
-  // ✅ FIREFOX-ONLY METADATA
   "browser_specific_settings": {
     "gecko": {
       "id": "cojim-secure@yourdomain.org",
@@ -65,3 +49,4 @@
     }
   }
 }
+
