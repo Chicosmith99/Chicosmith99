@@ -72,8 +72,12 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     switch (message.type) {
       case 'FLAG_COMMENT': {
-        const translated = await translateText(timestampedData.text, 'en', GOOGLE_API_KEY);
-        timestampedData.translatedText = translated.translatedText;
+const translated = await translateText(timestampedData.text, 'en', GOOGLE_API_KEY);
+timestampedData.translatedText = translated.translatedText;
+
+const { classifySentiment } = await import('./utils/sentimentClassifier.js');
+const sentiment = await classifySentiment(translated.translatedText);
+timestampedData.sentiment = sentiment;
 
         await addFlaggedComment(timestampedData);
         const subject = timestampedData.highRisk
