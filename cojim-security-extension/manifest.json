@@ -44,7 +44,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "cojim-secure@yourdomain.org",
+      "id": "security@cojim.org",
       "strict_min_version": "91.0"
     }
   }
