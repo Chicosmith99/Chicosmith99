@@ -1,5 +1,16 @@
 // Firebase Config Loader
 import { fetchRemoteConfig } from './utils/remoteConfig.js';
+// Firestore Setup
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg",
+  authDomain: "cojim-social-media-security-e.firebaseapp.com",
+  projectId: "cojim-social-media-security-e"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // Default fallback config
 let remoteConfig = {
@@ -91,29 +102,33 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     };
 
     switch (message.type) {
-      case 'FLAG_COMMENT': {
-        const translated = await translateText(timestampedData.text, 'en', GOOGLE_API_KEY);
-        timestampedData.translatedText = translated.translatedText;
+case 'FLAG_COMMENT': {
+  const translated = await translateText(timestampedData.text, 'en', GOOGLE_API_KEY);
+  timestampedData.translatedText = translated.translatedText;
 
-        const { classifySentiment } = await import('./utils/sentimentClassifier.js');
-        const sentiment = await classifySentiment(translated.translatedText);
-        timestampedData.sentiment = sentiment;
+  const { classifySentiment } = await import('./utils/sentimentClassifier.js');
+  const sentiment = await classifySentiment(translated.translatedText);
+  timestampedData.sentiment = sentiment;
 
-        await addFlaggedComment(timestampedData);
-        const subject = timestampedData.highRisk
-          ? 'High-Risk Flagged Comment Detected'
-          : 'Flagged Comment Detected';
+  await addFlaggedComment(timestampedData);
 
-        const notificationMessage =
-          translated.translatedText || timestampedData.text || 'A comment was flagged.';
-        notificationQueue.push({ subject, message: notificationMessage });
-        processNotificationQueue();
+  // 🔥 NEW: Add to Firestore
+  await addDoc(collection(db, "flaggedLogs"), timestampedData);
 
-        sendEmail(remoteConfig.adminEmails, `COJIM Security Extension - ${subject}`, JSON.stringify(timestampedData, null, 2));
-        console.log('✅ Flagged comment processed:', timestampedData);
-        sendResponse({ status: 'received' });
-        break;
-      }
+  const subject = timestampedData.highRisk
+    ? 'High-Risk Flagged Comment Detected'
+    : 'Flagged Comment Detected';
+
+  const notificationMessage =
+    translated.translatedText || timestampedData.text || 'A comment was flagged.';
+  notificationQueue.push({ subject, message: notificationMessage });
+  processNotificationQueue();
+
+  sendEmail(remoteConfig.adminEmails, `COJIM Security Extension - ${subject}`, JSON.stringify(timestampedData, null, 2));
+  console.log('✅ Flagged comment processed:', timestampedData);
+  sendResponse({ status: 'received' });
+  break;
+}
 
       case 'FLAG_LIVE_STREAM':
         await appendToStorage(STORAGE_KEYS.LIVE_STREAMS, timestampedData);

@@ -1,5 +1,16 @@
 import { getStorage, setStorage, STORAGE_KEYS } from '../utils/storage.js';
 import { calculateRiskScore, getRiskLevel } from '../utils/riskCalculator.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg",
+  authDomain: "cojim-social-media-security-e.firebaseapp.com",
+  projectId: "cojim-social-media-security-e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 document.addEventListener('DOMContentLoaded', () => {
   const navButtons = document.querySelectorAll('.nav-btn');
@@ -152,4 +163,50 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load flagged comments on startup
   loadFlaggedComments();
   updateRiskDisplay();
+
+  // Log streaming for flagged-logs tab
+  const logsContainer = document.getElementById('logs-container');
+
+  function renderLog(doc) {
+    const data = doc.data();
+    const card = document.createElement('div');
+    card.className = 'border p-3 rounded bg-white dark:bg-gray-800';
+
+    const text = document.createElement('p');
+    text.innerHTML = `<strong>Original:</strong> ${data.text}`;
+
+    const translated = document.createElement('p');
+    translated.innerHTML = `<strong>Translated:</strong> ${data.translatedText || '[n/a]'}`;
+
+    const platform = document.createElement('p');
+    platform.innerHTML = `<strong>Platform:</strong> ${data.platform}`;
+
+    const timestamp = new Date(data.timestamp).toLocaleString();
+    const time = document.createElement('p');
+    time.innerHTML = `<strong>Time:</strong> ${timestamp}`;
+
+    const sentiment = document.createElement('p');
+    sentiment.innerHTML = `<strong>Sentiment:</strong> ${data.sentiment || 'unknown'}`;
+
+    card.appendChild(text);
+    card.appendChild(translated);
+    card.appendChild(platform);
+    card.appendChild(time);
+    card.appendChild(sentiment);
+    logsContainer.appendChild(card);
+  }
+
+  function startLogStream() {
+    logsContainer.innerHTML = '<p>Listening for live flagged logs...</p>';
+    const q = query(collection(db, "flaggedLogs"), orderBy("timestamp", "desc"));
+
+    onSnapshot(q, (snapshot) => {
+      logsContainer.innerHTML = '';
+      snapshot.forEach(doc => renderLog(doc));
+    });
+  }
+
+  if (logsContainer) {
+    startLogStream();
+  }
 });

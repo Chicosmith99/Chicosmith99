@@ -1,73 +1,92 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Firebase config
+// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg",
   authDomain: "cojim-social-media-security-e.firebaseapp.com",
-  projectId: "cojim-social-media-security-e",
+  projectId: "cojim-social-media-security-e"
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
 
-const allowedAdmin = "chicoajsmith@gmail.com";
-let configDoc;
-
-function createListItem(field, value) {
-  const li = document.createElement('li');
-  li.className = "flex items-center gap-2";
-  const span = document.createElement('span');
-  span.textContent = value;
-  const btn = document.createElement('button');
-  btn.textContent = "❌";
-  btn.className = "text-red-600";
-  btn.onclick = () => removeField(field, value);
-  li.appendChild(span);
-  li.appendChild(btn);
-  document.getElementById(field).appendChild(li);
-}
-
-async function loadData() {
-  configDoc = doc(db, "securityConfig", "global");
-  const snap = await getDoc(configDoc);
-  const data = snap.data();
-  ['adminEmails', 'whitelist', 'blacklist', 'customSpamPatterns'].forEach(field => {
-    document.getElementById(field).innerHTML = '';
-    (data[field] || []).forEach(v => createListItem(field, v));
+// Utility: Load and render fields
+function renderList(listId, values) {
+  const ul = document.getElementById(listId);
+  ul.innerHTML = "";
+  values.forEach((val, index) => {
+    const li = document.createElement("li");
+    li.className = "flex justify-between items-center bg-gray-200 px-2 py-1 rounded";
+    li.innerHTML = `
+      <span>${val}</span>
+      <button class="text-red-600 hover:underline" onclick="removeField('${listId}', ${index})">Remove</button>
+    `;
+    ul.appendChild(li);
   });
 }
 
-async function addField(field) {
-  const input = document.getElementById("new" + field.charAt(0).toUpperCase() + field.slice(1));
+window.addField = async function (key) {
+  const input = document.getElementById("new" + key.charAt(0).toUpperCase() + key.slice(1));
   const val = input.value.trim();
   if (!val) return;
-  const snap = await getDoc(configDoc);
-  const current = snap.data()[field] || [];
-  if (!current.includes(val)) {
-    current.push(val);
-    await updateDoc(configDoc, { [field]: current });
-    input.value = "";
-    loadData();
-  }
+  const ref = collection(db, "remoteConfig");
+  const docRef = collection(db, "remoteConfig");
+  const snapshot = await onSnapshot(docRef, () => {});
+  input.value = "";
+};
+
+window.removeField = function (key, index) {
+  console.log("Remove not implemented in Firestore yet");
+};
+
+// 🔴 Realtime Logs
+const logsContainer = document.getElementById("logs-container");
+
+function renderLogEntry(data) {
+  const card = document.createElement("div");
+  card.className = "border p-3 rounded bg-gray-50";
+
+  const text = document.createElement("p");
+  text.innerHTML = `<strong>Original:</strong> ${data.text}`;
+
+  const translated = document.createElement("p");
+  translated.innerHTML = `<strong>Translated:</strong> ${data.translatedText || '[n/a]'}`;
+
+  const sentiment = document.createElement("p");
+  sentiment.innerHTML = `<strong>Sentiment:</strong> ${data.sentiment || 'neutral'}`;
+
+  const platform = document.createElement("p");
+  platform.innerHTML = `<strong>Platform:</strong> ${data.platform}`;
+
+  const time = new Date(data.timestamp).toLocaleString();
+  const timestamp = document.createElement("p");
+  timestamp.innerHTML = `<strong>Time:</strong> ${time}`;
+
+  card.appendChild(text);
+  card.appendChild(translated);
+  card.appendChild(sentiment);
+  card.appendChild(platform);
+  card.appendChild(timestamp);
+  logsContainer.appendChild(card);
 }
 
-async function removeField(field, val) {
-  const snap = await getDoc(configDoc);
-  const current = snap.data()[field] || [];
-  const updated = current.filter(v => v !== val);
-  await updateDoc(configDoc, { [field]: updated });
-  loadData();
+function startLogsListener() {
+  logsContainer.innerHTML = '<p class="text-gray-500">Listening for flagged content...</p>';
+  const q = query(collection(db, "flaggedLogs"), orderBy("timestamp", "desc"));
+
+  onSnapshot(q, (snapshot) => {
+    logsContainer.innerHTML = '';
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      renderLogEntry(data);
+    });
+  });
 }
 
-// Auth check
-onAuthStateChanged(auth, (user) => {
-  if (user?.email === allowedAdmin) {
-    loadData();
-  } else {
-    alert("Access denied. You are not an authorized admin.");
-    signInWithPopup(auth, provider);
-  }
-});
+startLogsListener();

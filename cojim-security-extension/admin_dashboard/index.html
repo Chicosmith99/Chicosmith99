@@ -9,6 +9,7 @@
 <body class="bg-gray-100 text-gray-900 p-6">
   <h1 class="text-3xl font-bold mb-4">COJIM Admin Console</h1>
 
+  <!-- Admin Emails -->
   <div class="mb-6">
     <h2 class="text-xl font-semibold mb-2">Admin Emails</h2>
     <ul id="adminEmails" class="space-y-1 mb-2"></ul>
@@ -16,6 +17,7 @@
     <button onclick="addField('adminEmails')" class="bg-blue-600 text-white px-4 py-1 rounded">Add</button>
   </div>
 
+  <!-- Whitelist -->
   <div class="mb-6">
     <h2 class="text-xl font-semibold mb-2">Whitelist</h2>
     <ul id="whitelist" class="space-y-1 mb-2"></ul>
@@ -23,6 +25,7 @@
     <button onclick="addField('whitelist')" class="bg-blue-600 text-white px-4 py-1 rounded">Add</button>
   </div>
 
+  <!-- Blacklist -->
   <div class="mb-6">
     <h2 class="text-xl font-semibold mb-2">Blacklist</h2>
     <ul id="blacklist" class="space-y-1 mb-2"></ul>
@@ -30,11 +33,20 @@
     <button onclick="addField('blacklist')" class="bg-blue-600 text-white px-4 py-1 rounded">Add</button>
   </div>
 
+  <!-- Spam Patterns -->
   <div class="mb-6">
     <h2 class="text-xl font-semibold mb-2">Custom Spam Patterns</h2>
     <ul id="customSpamPatterns" class="space-y-1 mb-2"></ul>
     <input id="newCustomSpamPatterns" placeholder="Add pattern..." class="border px-2 py-1 mr-2" />
     <button onclick="addField('customSpamPatterns')" class="bg-blue-600 text-white px-4 py-1 rounded">Add</button>
+  </div>
+
+  <!-- 🔴 Flagged Logs -->
+  <div class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">Flagged Logs (Live)</h2>
+    <div id="logs-container" class="space-y-4 overflow-auto max-h-[400px] border rounded p-3 bg-white">
+      <p class="text-gray-500">Loading flagged logs from Firestore...</p>
+    </div>
   </div>
 
   <script type="module" src="dashboard.js"></script>
