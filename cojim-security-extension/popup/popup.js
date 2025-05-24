@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => showTab(btn.dataset.tab));
   });
 
-  showTab('dashboard'); // default
+  showTab('dashboard'); // default tab
 
-  // Theme toggle
+  // Dark mode toggle
   const darkModeToggle = document.getElementById('dark-mode-toggle');
   if (darkModeToggle) {
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -28,13 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
     darkModeToggle.checked = savedTheme === 'dark';
 
     darkModeToggle.addEventListener('change', () => {
-      const theme = darkModeToggle.checked ? 'dark' : 'light';
-      document.documentElement.className = theme;
-      localStorage.setItem('theme', theme);
+      const newTheme = darkModeToggle.checked ? 'dark' : 'light';
+      document.documentElement.className = newTheme;
+      localStorage.setItem('theme', newTheme);
     });
   }
 
-  // Whitelist section
+  // Whitelist management
   const whitelistList = document.getElementById('whitelist-list');
   const addDomainBtn = document.getElementById('add-domain-btn');
   const newDomainInput = document.getElementById('new-domain');
@@ -43,16 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const whitelist = await getStorage(STORAGE_KEYS.WHITELIST) || [];
     whitelistList.innerHTML = '';
 
-    whitelist.forEach((domain, idx) => {
+    whitelist.forEach((domain, index) => {
       const li = document.createElement('li');
 
       const input = document.createElement('input');
       input.type = 'text';
       input.value = domain;
       input.className = 'border p-1 rounded w-4/5 mr-2';
-
       input.addEventListener('change', () => {
-        whitelist[idx] = input.value.trim();
+        whitelist[index] = input.value.trim();
         saveWhitelist(whitelist);
       });
 
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
       deleteBtn.textContent = 'Delete';
       deleteBtn.className = 'bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700';
       deleteBtn.addEventListener('click', () => {
-        whitelist.splice(idx, 1);
+        whitelist.splice(index, 1);
         saveWhitelist(whitelist);
         loadWhitelist();
       });
@@ -88,13 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Load whitelist on startup
   loadWhitelist();
 
-  // Flagged Comments section
+  // Flagged comments display
   const flaggedContainer = document.getElementById('flagged-comments-container');
 
   async function loadFlaggedComments() {
-    const comments = await getStorage('flaggedComments') || [];
+    const comments = await getStorage(STORAGE_KEYS.FLAGGED_COMMENTS) || [];
     flaggedContainer.innerHTML = '';
 
     if (comments.length === 0) {
@@ -124,5 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Load flagged comments on startup
   loadFlaggedComments();
 });

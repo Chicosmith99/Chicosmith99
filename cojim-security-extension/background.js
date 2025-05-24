@@ -12,6 +12,8 @@ if (typeof browser === "undefined") {
   var browser = chrome;
 }
 
+const GOOGLE_API_KEY = 'AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg';
+
 const STORAGE_KEYS = {
   FLAGGED_COMMENTS: 'flaggedComments',
   LIVE_STREAMS: 'flaggedLiveStreams',
@@ -69,13 +71,16 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     };
 
     switch (message.type) {
-      case 'FLAG_COMMENT':
-        const translated = await translateText(timestampedData.text);
+      case 'FLAG_COMMENT': {
+        const translated = await translateText(timestampedData.text, 'en', GOOGLE_API_KEY);
         timestampedData.translatedText = translated.translatedText;
 
         await addFlaggedComment(timestampedData);
-        const subject = timestampedData.highRisk ? 'High-Risk Flagged Comment Detected' : 'Flagged Comment Detected';
-        const notificationMessage = translated.translatedText || timestampedData.text || 'A comment was flagged.';
+        const subject = timestampedData.highRisk
+          ? 'High-Risk Flagged Comment Detected'
+          : 'Flagged Comment Detected';
+        const notificationMessage =
+          translated.translatedText || timestampedData.text || 'A comment was flagged.';
         notificationQueue.push({ subject, message: notificationMessage });
         processNotificationQueue();
 
@@ -83,6 +88,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         console.log('Flagged comment processed:', timestampedData);
         sendResponse({ status: 'received' });
         break;
+      }
 
       case 'FLAG_LIVE_STREAM':
         await appendToStorage(STORAGE_KEYS.LIVE_STREAMS, timestampedData);
