@@ -116,9 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const time = comment.flaggedAt ? new Date(comment.flaggedAt).toLocaleString() : 'Unknown';
       timestamp.textContent = `Flagged At: ${time}`;
 
+      const sentiment = document.createElement('p');
+      sentiment.innerHTML = `<strong>Sentiment:</strong> ${comment.sentiment || 'unknown'}`;
+
       card.appendChild(text);
       card.appendChild(platform);
       card.appendChild(timestamp);
+      card.appendChild(sentiment);
 
       flaggedContainer.appendChild(card);
     });
