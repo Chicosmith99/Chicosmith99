@@ -11,10 +11,9 @@
     "https://www.youtube.com/*",
     "https://www.facebook.com/*"
   ],
-  "incognito": true,
+  "incognito": "spanning",
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
