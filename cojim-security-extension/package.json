@@ -1,0 +1,26 @@
+{
+  "name": "cojim-security-extension",
+  "version": "1.0.0",
+  "description": "COJIM Social Media Security Extension",
+  "main": "background.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/core": "^7.20.0",
+    "babel-jest": "^29.0.0"
+  },
+  "babel": {
+    "presets": ["@babel/preset-env"]
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    }
+  },
+  "author": "",
+  "license": "ISC"
+}
