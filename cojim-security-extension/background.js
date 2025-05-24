@@ -1,5 +1,7 @@
+// Firebase Config Loader
 import { fetchRemoteConfig } from './utils/remoteConfig.js';
 
+// Default fallback config
 let remoteConfig = {
   adminEmails: ['info@cojim.org'],
   whitelist: [],
@@ -12,29 +14,21 @@ async function loadRemoteConfig() {
   remoteConfig = { ...remoteConfig, ...data };
   console.log('🔥 Remote config loaded:', remoteConfig);
 }
-
 loadRemoteConfig();
-// Reload every 10 minutes
-setInterval(loadRemoteConfig, 10 * 60 * 1000);
+setInterval(loadRemoteConfig, 10 * 60 * 1000); // Every 10 min
 
-// Replace all occurrences of adminEmails with remoteConfig.adminEmails, for example:
-
-// Old:
-// const adminEmails = ['info@cojim.org', 'christopherorjiministries@gmail.com'];
-// sendEmail(adminEmails, subject, body);
-
-// New:
-sendEmail(remoteConfig.adminEmails, subject, body);
+// Core Modules
 import {
   addFlaggedComment,
   getFlaggedComments,
   removeFlaggedComment,
   autoDeleteOldComments
 } from './utils/commentManager.js';
+
 import { notifyAdmin } from './utils/notifier.js';
 import { translateText } from './utils/translation.js';
 
-// Polyfill for browser compatibility
+// Polyfill for Firefox/Chrome compatibility
 if (typeof browser === "undefined") {
   var browser = chrome;
 }
@@ -46,8 +40,6 @@ const STORAGE_KEYS = {
   LIVE_STREAMS: 'flaggedLiveStreams',
   UPLOAD_POSTS: 'flaggedUploadPosts',
 };
-
-const adminEmails = ['info@cojim.org', 'christopherorjiministries@gmail.com'];
 
 let notificationQueue = [];
 let notificationInProgress = false;
@@ -90,6 +82,7 @@ function processNotificationQueue() {
   }, NOTIFICATION_THROTTLE_MS);
 }
 
+// Event Listener for All Messages
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   try {
     const timestampedData = {
@@ -99,38 +92,45 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     switch (message.type) {
       case 'FLAG_COMMENT': {
-const translated = await translateText(timestampedData.text, 'en', GOOGLE_API_KEY);
-timestampedData.translatedText = translated.translatedText;
+        const translated = await translateText(timestampedData.text, 'en', GOOGLE_API_KEY);
+        timestampedData.translatedText = translated.translatedText;
 
-const { classifySentiment } = await import('./utils/sentimentClassifier.js');
-const sentiment = await classifySentiment(translated.translatedText);
-timestampedData.sentiment = sentiment;
+        const { classifySentiment } = await import('./utils/sentimentClassifier.js');
+        const sentiment = await classifySentiment(translated.translatedText);
+        timestampedData.sentiment = sentiment;
 
         await addFlaggedComment(timestampedData);
         const subject = timestampedData.highRisk
           ? 'High-Risk Flagged Comment Detected'
           : 'Flagged Comment Detected';
+
         const notificationMessage =
           translated.translatedText || timestampedData.text || 'A comment was flagged.';
         notificationQueue.push({ subject, message: notificationMessage });
         processNotificationQueue();
 
-        sendEmail(adminEmails, `COJIM Security Extension - ${subject}`, JSON.stringify(timestampedData, null, 2));
-        console.log('Flagged comment processed:', timestampedData);
+        sendEmail(remoteConfig.adminEmails, `COJIM Security Extension - ${subject}`, JSON.stringify(timestampedData, null, 2));
+        console.log('✅ Flagged comment processed:', timestampedData);
         sendResponse({ status: 'received' });
         break;
       }
 
       case 'FLAG_LIVE_STREAM':
         await appendToStorage(STORAGE_KEYS.LIVE_STREAMS, timestampedData);
-        notificationQueue.push({ subject: 'Live Stream Detected', message: `Live stream detected on ${timestampedData.platform}` });
+        notificationQueue.push({
+          subject: 'Live Stream Detected',
+          message: `Live stream detected on ${timestampedData.platform}`
+        });
         processNotificationQueue();
         sendResponse({ status: 'received' });
         break;
 
       case 'FLAG_UPLOAD_POST':
         await appendToStorage(STORAGE_KEYS.UPLOAD_POSTS, timestampedData);
-        notificationQueue.push({ subject: 'Upload Post Detected', message: `Upload post detected on ${timestampedData.platform}` });
+        notificationQueue.push({
+          subject: 'Upload Post Detected',
+          message: `Upload post detected on ${timestampedData.platform}`
+        });
         processNotificationQueue();
         sendResponse({ status: 'received' });
         break;
@@ -146,18 +146,19 @@ timestampedData.sentiment = sentiment;
 
     return true;
   } catch (error) {
-    console.error('Error handling message:', message.type, error);
+    console.error('❌ Error handling message:', message.type, error);
     sendResponse({ status: 'error', message: error.message });
     return true;
   }
 });
 
+// Run cleanup at init
 autoDeleteOldComments()
   .then(filtered => {
-    console.log('Auto-deleted old flagged comments, remaining:', filtered.length);
+    console.log('🧹 Auto-deleted old flagged comments, remaining:', filtered.length);
   })
   .catch(error => {
-    console.error('Error auto-deleting old comments:', error);
+    console.error('❌ Error auto-deleting old comments:', error);
   });
 
-console.log('Background script initialized');
+console.log('🟢 Background script initialized');
