@@ -17,6 +17,25 @@ const firebaseConfig = {
   authDomain: "cojim-social-media-security-e.firebaseapp.com",
   projectId: "cojim-social-media-security-e"
 };
+import {
+  doc, getDoc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const configDoc = doc(db, "remoteConfig", "default");
+
+async function syncAIModerationToggle() {
+  const docSnap = await getDoc(configDoc);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const toggle = document.getElementById("aiModerationToggle");
+    if (toggle) toggle.checked = !!data.aiModerationEnabled;
+
+    toggle.addEventListener("change", async () => {
+      await updateDoc(configDoc, { aiModerationEnabled: toggle.checked });
+    });
+  }
+}
+syncAIModerationToggle();
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
