@@ -1,32 +1,31 @@
+// Firebase Setup
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore,
   collection,
-  onSnapshot,
+  addDoc,
+  getDocs,
   query,
-  orderBy,
-  getDocs
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// Firebase Config Loader
-import { fetchRemoteConfig } from './utils/remoteConfig.js';
-// Firestore Setup
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg",
   authDomain: "cojim-social-media-security-e.firebaseapp.com",
   projectId: "cojim-social-media-security-e"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Default fallback config
+// Remote Config Loader
+import { fetchRemoteConfig } from './utils/remoteConfig.js';
 let remoteConfig = {
   adminEmails: ['info@cojim.org'],
   whitelist: [],
   customSpamPatterns: [],
-  keywords: []
+  keywords: [],
+  aiModerationEnabled: true
 };
 
 async function loadRemoteConfig() {
@@ -34,8 +33,9 @@ async function loadRemoteConfig() {
   remoteConfig = { ...remoteConfig, ...data };
   console.log('🔥 Remote config loaded:', remoteConfig);
 }
+
 loadRemoteConfig();
-setInterval(loadRemoteConfig, 10 * 60 * 1000); // Every 10 min
+setInterval(loadRemoteConfig, 10 * 60 * 1000);
 
 // Core Modules
 import {
@@ -48,33 +48,34 @@ import {
 import { notifyAdmin } from './utils/notifier.js';
 import { translateText } from './utils/translation.js';
 
-// Polyfill for Firefox/Chrome compatibility
+// Browser compatibility polyfill
 if (typeof browser === "undefined") {
   var browser = chrome;
 }
 
+// Constants
 const GOOGLE_API_KEY = 'AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg';
 
 const STORAGE_KEYS = {
   FLAGGED_COMMENTS: 'flaggedComments',
   LIVE_STREAMS: 'flaggedLiveStreams',
-  UPLOAD_POSTS: 'flaggedUploadPosts',
+  UPLOAD_POSTS: 'flaggedUploadPosts'
 };
 
+// Local Notification Queue
 let notificationQueue = [];
 let notificationInProgress = false;
 const NOTIFICATION_THROTTLE_MS = 1000;
 
+// Utility: Local storage wrappers
 async function getStorage(key) {
-  return new Promise((resolve) => {
-    browser.storage.local.get([key], (result) => {
-      resolve(result[key] || []);
-    });
+  return new Promise(resolve => {
+    browser.storage.local.get([key], result => resolve(result[key] || []));
   });
 }
 
 async function setStorage(key, value) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     browser.storage.local.set({ [key]: value }, () => resolve());
   });
 }
@@ -85,12 +86,14 @@ async function appendToStorage(key, item) {
   await setStorage(key, items);
 }
 
+// Mock Email Notification
 function sendEmail(toAddresses, subject, body) {
-  console.log('Pretend email to:', toAddresses);
-  console.log('Subject:', subject);
-  console.log('Body:', body);
+  console.log('📧 Email to:', toAddresses);
+  console.log('📌 Subject:', subject);
+  console.log('📝 Body:', body);
 }
 
+// Notification Processor
 function processNotificationQueue() {
   if (notificationInProgress || notificationQueue.length === 0) return;
   notificationInProgress = true;
@@ -102,45 +105,42 @@ function processNotificationQueue() {
   }, NOTIFICATION_THROTTLE_MS);
 }
 
-// Event Listener for All Messages
+// Background Message Listener
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   try {
     const timestampedData = {
       ...message.data,
-      flaggedAt: Date.now(),
+      flaggedAt: Date.now()
     };
 
     switch (message.type) {
-case 'FLAG_COMMENT': {
-  const translated = await translateText(timestampedData.text, 'en', GOOGLE_API_KEY);
-  timestampedData.translatedText = translated.translatedText;
+      case 'FLAG_COMMENT': {
+        const translated = await translateText(timestampedData.text, 'en', GOOGLE_API_KEY);
+        timestampedData.translatedText = translated.translatedText;
 
-  // Load sentiment classifier dynamically if enabled
-  if (remoteConfig.aiModerationEnabled) {
-    const { classifySentiment } = await import('./utils/sentimentClassifier.js');
-    const sentiment = await classifySentiment(translated.translatedText);
-    timestampedData.sentiment = sentiment;
-  }
+        if (remoteConfig.aiModerationEnabled) {
+          const { classifySentiment } = await import('./utils/sentimentClassifier.js');
+          timestampedData.sentiment = await classifySentiment(translated.translatedText);
+        }
 
-  await addFlaggedComment(timestampedData);
+        await addFlaggedComment(timestampedData);
+        await addDoc(collection(db, "flaggedLogs"), timestampedData);
 
-  // 🔥 NEW: Add to Firestore
-  await addDoc(collection(db, "flaggedLogs"), timestampedData);
+        const subject = timestampedData.highRisk
+          ? 'High-Risk Flagged Comment Detected'
+          : 'Flagged Comment Detected';
 
-  const subject = timestampedData.highRisk
-    ? 'High-Risk Flagged Comment Detected'
-    : 'Flagged Comment Detected';
+        notificationQueue.push({
+          subject,
+          message: translated.translatedText || timestampedData.text
+        });
+        processNotificationQueue();
 
-  const notificationMessage =
-    translated.translatedText || timestampedData.text || 'A comment was flagged.';
-  notificationQueue.push({ subject, message: notificationMessage });
-  processNotificationQueue();
-
-  sendEmail(remoteConfig.adminEmails, `COJIM Security Extension - ${subject}`, JSON.stringify(timestampedData, null, 2));
-  console.log('✅ Flagged comment processed:', timestampedData);
-  sendResponse({ status: 'received' });
-  break;
-}
+        sendEmail(remoteConfig.adminEmails, `COJIM Security Extension - ${subject}`, JSON.stringify(timestampedData, null, 2));
+        console.log('✅ Flagged comment processed:', timestampedData);
+        sendResponse({ status: 'received' });
+        break;
+      }
 
       case 'FLAG_LIVE_STREAM':
         await appendToStorage(STORAGE_KEYS.LIVE_STREAMS, timestampedData);
@@ -173,22 +173,21 @@ case 'FLAG_COMMENT': {
 
     return true;
   } catch (error) {
-    console.error('❌ Error handling message:', message.type, error);
+    console.error('❌ Error:', error);
     sendResponse({ status: 'error', message: error.message });
     return true;
   }
 });
 
-// Run cleanup at init
+// Clean-up old logs on startup
 autoDeleteOldComments()
   .then(filtered => {
-    console.log('🧹 Auto-deleted old flagged comments, remaining:', filtered.length);
+    console.log('🧹 Cleaned old flagged comments:', filtered.length);
   })
   .catch(error => {
-    console.error('❌ Error auto-deleting old comments:', error);
+    console.error('🧨 Cleanup error:', error);
   });
 
-console.log('🟢 Background script initialized');
 // 📥 CSV Export Handler
 document.getElementById("exportCSV").addEventListener("click", async () => {
   const q = query(collection(db, "flaggedLogs"), orderBy("timestamp", "desc"));
@@ -200,7 +199,6 @@ document.getElementById("exportCSV").addEventListener("click", async () => {
   }
 
   const rows = [["Text", "Translated", "Sentiment", "Platform", "Timestamp"]];
-
   snapshot.forEach(doc => {
     const data = doc.data();
     rows.push([
@@ -212,17 +210,15 @@ document.getElementById("exportCSV").addEventListener("click", async () => {
     ]);
   });
 
-  const csvContent = rows.map(row => row.join(",")).join("\n");
+  const csvContent = rows.map(r => r.join(",")).join("\n");
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement("a");
+
   a.href = url;
   a.download = `cojim_flagged_logs_${new Date().toISOString().split("T")[0]}.csv`;
-  a.style.display = "none";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-
   URL.revokeObjectURL(url);
 });
