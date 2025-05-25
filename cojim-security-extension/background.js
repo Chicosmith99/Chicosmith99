@@ -20,6 +20,7 @@ const db = getFirestore(app);
 
 // Remote Config Loader
 import { fetchRemoteConfig } from './utils/remoteConfig.js';
+
 let remoteConfig = {
   adminEmails: ['info@cojim.org'],
   whitelist: [],
@@ -33,7 +34,6 @@ async function loadRemoteConfig() {
   remoteConfig = { ...remoteConfig, ...data };
   console.log('🔥 Remote config loaded:', remoteConfig);
 }
-
 loadRemoteConfig();
 setInterval(loadRemoteConfig, 10 * 60 * 1000);
 
@@ -48,12 +48,11 @@ import {
 import { notifyAdmin } from './utils/notifier.js';
 import { translateText } from './utils/translation.js';
 
-// Browser compatibility polyfill
+// Browser polyfill
 if (typeof browser === "undefined") {
   var browser = chrome;
 }
 
-// Constants
 const GOOGLE_API_KEY = 'AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg';
 
 const STORAGE_KEYS = {
@@ -62,12 +61,10 @@ const STORAGE_KEYS = {
   UPLOAD_POSTS: 'flaggedUploadPosts'
 };
 
-// Local Notification Queue
 let notificationQueue = [];
 let notificationInProgress = false;
 const NOTIFICATION_THROTTLE_MS = 1000;
 
-// Utility: Local storage wrappers
 async function getStorage(key) {
   return new Promise(resolve => {
     browser.storage.local.get([key], result => resolve(result[key] || []));
@@ -86,14 +83,12 @@ async function appendToStorage(key, item) {
   await setStorage(key, items);
 }
 
-// Mock Email Notification
 function sendEmail(toAddresses, subject, body) {
   console.log('📧 Email to:', toAddresses);
   console.log('📌 Subject:', subject);
   console.log('📝 Body:', body);
 }
 
-// Notification Processor
 function processNotificationQueue() {
   if (notificationInProgress || notificationQueue.length === 0) return;
   notificationInProgress = true;
@@ -105,7 +100,6 @@ function processNotificationQueue() {
   }, NOTIFICATION_THROTTLE_MS);
 }
 
-// Background Message Listener
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   try {
     const timestampedData = {
@@ -179,7 +173,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
 });
 
-// Clean-up old logs on startup
+// Cleanup
 autoDeleteOldComments()
   .then(filtered => {
     console.log('🧹 Cleaned old flagged comments:', filtered.length);
@@ -189,7 +183,7 @@ autoDeleteOldComments()
   });
 
 // 📥 CSV Export Handler
-document.getElementById("exportCSV").addEventListener("click", async () => {
+document.getElementById("exportCSV")?.addEventListener("click", async () => {
   const q = query(collection(db, "flaggedLogs"), orderBy("timestamp", "desc"));
   const snapshot = await getDocs(q);
 
