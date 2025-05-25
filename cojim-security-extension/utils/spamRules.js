@@ -51,6 +51,7 @@ const highRiskPatterns = [
   /pray deliverance/i,
   /pray salvation/i,
   /pray healing/i,
+
 ];
 
 // Normalize obfuscated characters in spam text (e.g. “s3nd m0ney”)
