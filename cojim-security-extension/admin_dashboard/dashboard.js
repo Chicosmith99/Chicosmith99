@@ -128,3 +128,43 @@ function startLogsListener() {
 }
 
 startLogsListener();
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+document.getElementById("exportCsvBtn")?.addEventListener("click", async () => {
+  const db = getFirestore();
+  const snapshot = await getDocs(collection(db, "flaggedLogs"));
+
+  const rows = [];
+  rows.push([
+    "Original Text",
+    "Translated Text",
+    "Sentiment",
+    "Platform",
+    "Timestamp",
+    "High Risk"
+  ]);
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    rows.push([
+      `"${data.text || ""}"`,
+      `"${data.translatedText || ""}"`,
+      data.sentiment || "",
+      data.platform || "",
+      new Date(data.timestamp).toLocaleString(),
+      data.highRisk ? "YES" : "NO"
+    ]);
+  });
+
+  const csvContent = rows.map(r => r.join(",")).join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `flagged-logs-${Date.now()}.csv`;
+  link.click();
+});
