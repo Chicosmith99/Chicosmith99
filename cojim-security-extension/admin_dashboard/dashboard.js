@@ -168,3 +168,49 @@ document.getElementById("exportCsvBtn")?.addEventListener("click", async () => {
   link.download = `flagged-logs-${Date.now()}.csv`;
   link.click();
 });
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Format digest text
+function formatDigest(logs) {
+  if (logs.length === 0) return "No flagged content found in the last 7 days.";
+
+  return logs.map(log => {
+    return `📌 ${log.platform} | ${new Date(log.timestamp).toLocaleString()}
+- Text: ${log.text}
+- Translated: ${log.translatedText}
+- Sentiment: ${log.sentiment}
+- High Risk: ${log.highRisk ? 'Yes' : 'No'}`;
+  }).join("\n\n");
+}
+
+// Preview button
+document.getElementById("previewDigestBtn")?.addEventListener("click", async () => {
+  const db = getFirestore();
+  const now = Date.now();
+  const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
+
+  const q = query(collection(db, "flaggedLogs"), where("timestamp", ">=", oneWeekAgo));
+  const snapshot = await getDocs(q);
+
+  const logs = [];
+  snapshot.forEach(doc => logs.push(doc.data()));
+
+  const digestText = formatDigest(logs);
+  document.getElementById("digestContent").textContent = digestText;
+  document.getElementById("digestPreview").classList.remove("hidden");
+});
+
+// "Send" button (console only for now)
+document.getElementById("sendDigestBtn")?.addEventListener("click", () => {
+  const digestText = document.getElementById("digestContent").textContent;
+  const to = ["info@cojim.org", "christopherorjiministries@gmail.com"]; // Replace or load from remoteConfig
+  console.log("📧 Sending weekly digest to:", to.join(", "));
+  console.log("✉️ Content:\n" + digestText);
+  alert("✅ Digest would be sent! (See console for simulation)");
+});

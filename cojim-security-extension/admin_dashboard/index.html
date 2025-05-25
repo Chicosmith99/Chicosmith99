@@ -78,6 +78,20 @@
         ⬇️ Export Logs as CSV
       </button>
     </div>
+<!-- Email Digest -->
+<div class="mt-4 text-right">
+  <button id="previewDigestBtn" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+    📨 Preview Weekly Digest
+  </button>
+</div>
+
+<div id="digestPreview" class="bg-white shadow p-4 mt-2 rounded hidden">
+  <h3 class="text-lg font-semibold mb-2">Digest Preview</h3>
+  <div id="digestContent" class="text-sm whitespace-pre-wrap font-mono text-gray-800"></div>
+  <button id="sendDigestBtn" class="mt-3 bg-indigo-700 text-white px-4 py-1 rounded hover:bg-indigo-800">
+    ✅ Send Email Digest
+  </button>
+</div>
 
     <div id="logs-container" class="space-y-4 overflow-auto max-h-[400px] border border-gray-300 rounded p-3 bg-white shadow-sm">
       <p class="text-gray-500">⏳ Loading flagged logs from Firestore...</p>
