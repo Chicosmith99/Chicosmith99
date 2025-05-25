@@ -186,3 +186,22 @@ document.getElementById("sendDigestBtn")?.addEventListener("click", () => {
   console.log("📄 Content:\n" + digest);
   alert("✅ Digest sent! (Simulated – actual email sending requires backend)");
 });
+async function loadRemoteRuleViewer() {
+  const docRef = doc(db, "remoteConfig", "global");
+  const docSnap = await getDoc(docRef);
+  const panel = document.getElementById("remoteRulesPanel");
+
+  if (!docSnap.exists()) {
+    panel.innerHTML = "<p class='text-red-500'>No remote config found.</p>";
+    return;
+  }
+
+  const data = docSnap.data();
+  const formatted = Object.entries(data).map(([key, value]) => {
+    const val = Array.isArray(value) ? value.join(", ") : JSON.stringify(value);
+    return `<p><strong>${key}:</strong> ${val}</p>`;
+  }).join("");
+
+  panel.innerHTML = formatted;
+}
+loadRemoteRuleViewer();
