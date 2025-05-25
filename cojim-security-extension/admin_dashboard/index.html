@@ -6,48 +6,60 @@
   <title>COJIM Admin Console</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-900 p-6">
-  <h1 class="text-3xl font-bold mb-4">COJIM Admin Console</h1>
+<body class="bg-gray-100 text-gray-900 p-6 font-sans">
+
+  <header class="mb-8">
+    <h1 class="text-3xl font-extrabold text-blue-800">COJIM Admin Console</h1>
+    <p class="text-sm text-gray-600">Monitor flagged content, manage admins and rules in real-time.</p>
+  </header>
 
   <!-- Admin Emails -->
-  <div class="mb-6">
-    <h2 class="text-xl font-semibold mb-2">Admin Emails</h2>
+  <section class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">📧 Admin Emails</h2>
     <ul id="adminEmails" class="space-y-1 mb-2"></ul>
-    <input id="newAdminEmail" placeholder="Add email..." class="border px-2 py-1 mr-2" />
-    <button onclick="addField('adminEmails')" class="bg-blue-600 text-white px-4 py-1 rounded">Add</button>
-  </div>
+    <div class="flex">
+      <input id="newAdminEmail" placeholder="Add email..." class="flex-1 border px-2 py-1 rounded mr-2" />
+      <button onclick="addField('adminEmails')" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Add</button>
+    </div>
+  </section>
 
   <!-- Whitelist -->
-  <div class="mb-6">
-    <h2 class="text-xl font-semibold mb-2">Whitelist</h2>
+  <section class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">✅ Whitelist Domains</h2>
     <ul id="whitelist" class="space-y-1 mb-2"></ul>
-    <input id="newWhitelist" placeholder="Add domain..." class="border px-2 py-1 mr-2" />
-    <button onclick="addField('whitelist')" class="bg-blue-600 text-white px-4 py-1 rounded">Add</button>
-  </div>
+    <div class="flex">
+      <input id="newWhitelist" placeholder="Add domain..." class="flex-1 border px-2 py-1 rounded mr-2" />
+      <button onclick="addField('whitelist')" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Add</button>
+    </div>
+  </section>
 
   <!-- Blacklist -->
-  <div class="mb-6">
-    <h2 class="text-xl font-semibold mb-2">Blacklist</h2>
+  <section class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">🚫 Blacklist Domains</h2>
     <ul id="blacklist" class="space-y-1 mb-2"></ul>
-    <input id="newBlacklist" placeholder="Add domain..." class="border px-2 py-1 mr-2" />
-    <button onclick="addField('blacklist')" class="bg-blue-600 text-white px-4 py-1 rounded">Add</button>
-  </div>
+    <div class="flex">
+      <input id="newBlacklist" placeholder="Add domain..." class="flex-1 border px-2 py-1 rounded mr-2" />
+      <button onclick="addField('blacklist')" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Add</button>
+    </div>
+  </section>
 
   <!-- Spam Patterns -->
-  <div class="mb-6">
-    <h2 class="text-xl font-semibold mb-2">Custom Spam Patterns</h2>
+  <section class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">🕵️ Custom Spam Patterns</h2>
     <ul id="customSpamPatterns" class="space-y-1 mb-2"></ul>
-    <input id="newCustomSpamPatterns" placeholder="Add pattern..." class="border px-2 py-1 mr-2" />
-    <button onclick="addField('customSpamPatterns')" class="bg-blue-600 text-white px-4 py-1 rounded">Add</button>
-  </div>
-
-  <!-- 🔴 Flagged Logs -->
-  <div class="mb-6">
-    <h2 class="text-xl font-semibold mb-2">Flagged Logs (Live)</h2>
-    <div id="logs-container" class="space-y-4 overflow-auto max-h-[400px] border rounded p-3 bg-white">
-      <p class="text-gray-500">Loading flagged logs from Firestore...</p>
+    <div class="flex">
+      <input id="newCustomSpamPatterns" placeholder="Add pattern..." class="flex-1 border px-2 py-1 rounded mr-2" />
+      <button onclick="addField('customSpamPatterns')" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Add</button>
     </div>
-  </div>
+  </section>
+
+  <!-- 🔴 Real-time Flagged Logs -->
+  <section class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">📛 Flagged Comment Logs (Real-time)</h2>
+    <div id="logs-container" class="space-y-4 overflow-auto max-h-[400px] border border-gray-300 rounded p-3 bg-white shadow-sm">
+      <p class="text-gray-500">⏳ Loading flagged logs from Firestore...</p>
+    </div>
+  </section>
 
   <script type="module" src="dashboard.js"></script>
 </body>
