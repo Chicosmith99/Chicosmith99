@@ -2,45 +2,29 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import {
   getFirestore,
   collection,
-  getDocs,
-  setDoc,
   doc,
-  onSnapshot,
+  getDoc,
+  getDocs,
+  updateDoc,
+  setDoc,
   query,
+  where,
   orderBy,
-  updateDoc
+  onSnapshot,
+  addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// 🛡️ Firebase Initialization
+// 🔐 Firebase Initialization
 const firebaseConfig = {
   apiKey: "AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg",
   authDomain: "cojim-social-media-security-e.firebaseapp.com",
   projectId: "cojim-social-media-security-e"
 };
-import {
-  doc, getDoc, updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const configDoc = doc(db, "remoteConfig", "default");
-
-async function syncAIModerationToggle() {
-  const docSnap = await getDoc(configDoc);
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    const toggle = document.getElementById("aiModerationToggle");
-    if (toggle) toggle.checked = !!data.aiModerationEnabled;
-
-    toggle.addEventListener("change", async () => {
-      await updateDoc(configDoc, { aiModerationEnabled: toggle.checked });
-    });
-  }
-}
-syncAIModerationToggle();
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🔧 UTILITY – Render list items like adminEmails, whitelist, blacklist, etc.
+// 📦 Utility: Render List
 function renderList(listId, values) {
   const ul = document.getElementById(listId);
   ul.innerHTML = "";
@@ -55,7 +39,7 @@ function renderList(listId, values) {
   });
 }
 
-// ✨ Add to Firestore remoteConfig doc (auto merges into array fields)
+// 🔧 Add Field to remoteConfig
 window.addField = async function (key) {
   const inputId = "new" + key.charAt(0).toUpperCase() + key.slice(1);
   const input = document.getElementById(inputId);
@@ -64,31 +48,43 @@ window.addField = async function (key) {
 
   const configRef = doc(db, "remoteConfig", "global");
 
-  try {
-    const configSnap = await getDocs(collection(db, "remoteConfig"));
-    let current = [];
-    configSnap.forEach(doc => {
-      if (doc.id === "global" && doc.data()[key]) {
-        current = doc.data()[key];
-      }
-    });
-
-    if (!current.includes(value)) {
-      current.push(value);
-      await updateDoc(configRef, { [key]: current });
-      console.log(`✅ Added "${value}" to ${key}`);
-    }
-
-    input.value = "";
-  } catch (e) {
-    console.error(`❌ Failed to update ${key}:`, e);
+  const docSnap = await getDoc(configRef);
+  let current = [];
+  if (docSnap.exists()) {
+    current = docSnap.data()[key] || [];
   }
+
+  if (!current.includes(value)) {
+    current.push(value);
+    await updateDoc(configRef, { [key]: current });
+    console.log(`✅ Added "${value}" to ${key}`);
+  }
+
+  input.value = "";
 };
 
-// ⚠️ Not yet implemented (will replace with array update logic)
+// 🧨 Not yet implemented removal
 window.removeField = function (key, index) {
-  alert("Remove functionality will be added in v3.3.");
+  alert("⚠️ Removal feature will be added in v3.3.");
 };
+
+// 🧠 AI Moderation Toggle Sync
+async function syncAIModerationToggle() {
+  const configRef = doc(db, "remoteConfig", "global");
+  const snap = await getDoc(configRef);
+  if (snap.exists()) {
+    const data = snap.data();
+    const toggle = document.getElementById("aiModerationToggle");
+    if (toggle) {
+      toggle.checked = !!data.aiModerationEnabled;
+      toggle.addEventListener("change", async () => {
+        await updateDoc(configRef, { aiModerationEnabled: toggle.checked });
+        console.log(`🔁 AI Moderation updated: ${toggle.checked}`);
+      });
+    }
+  }
+}
+syncAIModerationToggle();
 
 // 🔴 Real-time Flagged Logs
 const logsContainer = document.getElementById("logs-container");
@@ -97,13 +93,13 @@ function renderLogEntry(data) {
   const card = document.createElement("div");
   card.className = "border p-3 mb-4 rounded bg-white shadow";
 
-  const riskColor = data.riskLevel === 'high'
+  const riskColor = data.highRisk
     ? 'bg-red-600'
-    : data.riskLevel === 'medium'
-    ? 'bg-yellow-400'
+    : data.sentiment === 'negative'
+    ? 'bg-yellow-500'
     : 'bg-green-600';
 
-  const badge = `<span class="text-white text-xs px-2 py-1 rounded ${riskColor} font-semibold">${data.riskLevel?.toUpperCase() || 'UNKNOWN'}</span>`;
+  const badge = `<span class="text-white text-xs px-2 py-1 rounded ${riskColor} font-semibold">${data.sentiment?.toUpperCase() || 'UNKNOWN'}</span>`;
 
   card.innerHTML = `
     <p><strong>Platform:</strong> ${data.platform || 'Unknown'} ${badge}</p>
@@ -116,9 +112,8 @@ function renderLogEntry(data) {
   logsContainer.appendChild(card);
 }
 
-// 🔁 Start listening to logs
 function startLogsListener() {
-  logsContainer.innerHTML = '<p class="text-gray-500">Listening for flagged content...</p>';
+  logsContainer.innerHTML = '<p class="text-gray-500">⏳ Listening for flagged content...</p>';
   const q = query(collection(db, "flaggedLogs"), orderBy("timestamp", "desc"));
 
   onSnapshot(q, (snapshot) => {
@@ -128,89 +123,66 @@ function startLogsListener() {
 }
 
 startLogsListener();
-import {
-  getFirestore,
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// 📤 CSV Export Button
 document.getElementById("exportCsvBtn")?.addEventListener("click", async () => {
-  const db = getFirestore();
   const snapshot = await getDocs(collection(db, "flaggedLogs"));
+  if (snapshot.empty) {
+    alert("No flagged logs to export.");
+    return;
+  }
 
-  const rows = [];
-  rows.push([
-    "Original Text",
-    "Translated Text",
-    "Sentiment",
-    "Platform",
-    "Timestamp",
-    "High Risk"
-  ]);
-
+  const rows = [["Text", "Translated", "Sentiment", "Platform", "Timestamp", "High Risk"]];
   snapshot.forEach(doc => {
-    const data = doc.data();
+    const d = doc.data();
     rows.push([
-      `"${data.text || ""}"`,
-      `"${data.translatedText || ""}"`,
-      data.sentiment || "",
-      data.platform || "",
-      new Date(data.timestamp).toLocaleString(),
-      data.highRisk ? "YES" : "NO"
+      `"${d.text || ""}"`,
+      `"${d.translatedText || ""}"`,
+      d.sentiment || "neutral",
+      d.platform || "Unknown",
+      new Date(d.timestamp).toLocaleString(),
+      d.highRisk ? "YES" : "NO"
     ]);
   });
 
-  const csvContent = rows.map(r => r.join(",")).join("\n");
+  const csvContent = rows.map(row => row.join(",")).join("\n");
   const blob = new Blob([csvContent], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `flagged-logs-${Date.now()}.csv`;
-  link.click();
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `flagged-logs-${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 });
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Format digest text
-function formatDigest(logs) {
-  if (logs.length === 0) return "No flagged content found in the last 7 days.";
-
-  return logs.map(log => {
-    return `📌 ${log.platform} | ${new Date(log.timestamp).toLocaleString()}
-- Text: ${log.text}
-- Translated: ${log.translatedText}
-- Sentiment: ${log.sentiment}
-- High Risk: ${log.highRisk ? 'Yes' : 'No'}`;
-  }).join("\n\n");
-}
-
-// Preview button
+// 📅 Weekly Digest Preview
 document.getElementById("previewDigestBtn")?.addEventListener("click", async () => {
-  const db = getFirestore();
-  const now = Date.now();
-  const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
-
+  const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const q = query(collection(db, "flaggedLogs"), where("timestamp", ">=", oneWeekAgo));
   const snapshot = await getDocs(q);
 
   const logs = [];
   snapshot.forEach(doc => logs.push(doc.data()));
 
-  const digestText = formatDigest(logs);
-  document.getElementById("digestContent").textContent = digestText;
+  const content = logs.length === 0
+    ? "No flagged content found in the last 7 days."
+    : logs.map(log => {
+        return `📌 ${log.platform} | ${new Date(log.timestamp).toLocaleString()}
+- Text: ${log.text}
+- Translated: ${log.translatedText}
+- Sentiment: ${log.sentiment}
+- High Risk: ${log.highRisk ? 'Yes' : 'No'}`;
+      }).join("\n\n");
+
+  document.getElementById("digestContent").textContent = content;
   document.getElementById("digestPreview").classList.remove("hidden");
 });
 
-// "Send" button (console only for now)
+// 📧 Send Digest Button
 document.getElementById("sendDigestBtn")?.addEventListener("click", () => {
-  const digestText = document.getElementById("digestContent").textContent;
-  const to = ["info@cojim.org", "christopherorjiministries@gmail.com"]; // Replace or load from remoteConfig
-  console.log("📧 Sending weekly digest to:", to.join(", "));
-  console.log("✉️ Content:\n" + digestText);
-  alert("✅ Digest would be sent! (See console for simulation)");
+  const digest = document.getElementById("digestContent").textContent;
+  const recipients = ["info@cojim.org", "christopherorjiministries@gmail.com"];
+  console.log("📧 Would send weekly digest to:", recipients.join(", "));
+  console.log("📄 Content:\n" + digest);
+  alert("✅ Digest sent! (Simulated – actual email sending requires backend)");
 });
