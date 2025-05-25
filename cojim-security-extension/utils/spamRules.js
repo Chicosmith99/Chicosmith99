@@ -101,8 +101,41 @@ async function isHighRiskSpam(text) {
 }
 
 async function checkSpamStatus(text) {
-  const spam = await isSpam(text);
-  const highRisk = await isHighRiskSpam(text);
+  const normalized = normalizeText(text);
+
+  const patterns = await getSpamPatterns();
+
+  const emotionalTriggers = [
+    /please.*help/i,
+    /i am (in )?(pain|tears|suffering|sick)/i,
+    /i am dying/i,
+    /i am devastated/i,
+    /help me with.*(money|drugs|treatment|medical)/i,
+    /\d{10}/, // Likely bank account number
+    /account.*number/i,
+    /zenith bank/i,
+    /bank.*details/i
+  ];
+
+  const religiousTriggers = [
+    /in jesus name/i,
+    /god.*bless/i,
+    /in gods name/i,
+    /by his grace/i,
+    /i beg.*in.*god/i
+  ];
+
+  const financialTriggers = [
+    /help me with.*\d+/i,
+    /need.*money/i,
+    /send.*money/i,
+    /no.*money/i,
+    /donation/i
+  ];
+
+  const highRisk = [...emotionalTriggers, ...religiousTriggers, ...financialTriggers].some(p => p.test(normalized));
+  const spam = patterns.some(p => p.test(normalized)) || highRisk;
+
   return { spam, highRisk };
 }
 
