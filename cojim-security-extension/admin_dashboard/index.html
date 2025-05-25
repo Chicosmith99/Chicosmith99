@@ -56,6 +56,14 @@
   <!-- 🔴 Real-time Flagged Logs -->
   <section class="mb-6">
     <h2 class="text-xl font-semibold mb-2">📛 Flagged Comment Logs (Real-time)</h2>
+
+    <!-- ✅ CSV Export -->
+    <div class="flex justify-end mb-2">
+      <button id="exportCSV" class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700">
+        ⬇️ Export Logs as CSV
+      </button>
+    </div>
+
     <div id="logs-container" class="space-y-4 overflow-auto max-h-[400px] border border-gray-300 rounded p-3 bg-white shadow-sm">
       <p class="text-gray-500">⏳ Loading flagged logs from Firestore...</p>
     </div>

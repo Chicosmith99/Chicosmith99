@@ -1,3 +1,12 @@
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 // Firebase Config Loader
 import { fetchRemoteConfig } from './utils/remoteConfig.js';
 // Firestore Setup
@@ -177,3 +186,40 @@ autoDeleteOldComments()
   });
 
 console.log('🟢 Background script initialized');
+// 📥 CSV Export Handler
+document.getElementById("exportCSV").addEventListener("click", async () => {
+  const q = query(collection(db, "flaggedLogs"), orderBy("timestamp", "desc"));
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) {
+    alert("No logs available to export.");
+    return;
+  }
+
+  const rows = [["Text", "Translated", "Sentiment", "Platform", "Timestamp"]];
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    rows.push([
+      `"${data.text || ""}"`,
+      `"${data.translatedText || ""}"`,
+      data.sentiment || "neutral",
+      data.platform || "Unknown",
+      new Date(data.timestamp).toLocaleString()
+    ]);
+  });
+
+  const csvContent = rows.map(row => row.join(",")).join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `cojim_flagged_logs_${new Date().toISOString().split("T")[0]}.csv`;
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+});
