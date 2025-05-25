@@ -115,9 +115,12 @@ case 'FLAG_COMMENT': {
   const translated = await translateText(timestampedData.text, 'en', GOOGLE_API_KEY);
   timestampedData.translatedText = translated.translatedText;
 
-  const { classifySentiment } = await import('./utils/sentimentClassifier.js');
-  const sentiment = await classifySentiment(translated.translatedText);
-  timestampedData.sentiment = sentiment;
+  // Load sentiment classifier dynamically if enabled
+  if (remoteConfig.aiModerationEnabled) {
+    const { classifySentiment } = await import('./utils/sentimentClassifier.js');
+    const sentiment = await classifySentiment(translated.translatedText);
+    timestampedData.sentiment = sentiment;
+  }
 
   await addFlaggedComment(timestampedData);
 

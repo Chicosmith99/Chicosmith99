@@ -47,6 +47,15 @@
   <section class="mb-6">
     <h2 class="text-xl font-semibold mb-2">🕵️ Custom Spam Patterns</h2>
     <ul id="customSpamPatterns" class="space-y-1 mb-2"></ul>
+    <!-- AI Moderation Toggle -->
+<section class="mb-6">
+  <h2 class="text-xl font-semibold mb-2">🧠 AI Moderation</h2>
+  <div class="flex items-center">
+    <input id="aiModerationToggle" type="checkbox" class="mr-2" />
+    <label for="aiModerationToggle">Enable advanced AI sentiment detection</label>
+  </div>
+</section>
+
     <div class="flex">
       <input id="newCustomSpamPatterns" placeholder="Add pattern..." class="flex-1 border px-2 py-1 rounded mr-2" />
       <button onclick="addField('customSpamPatterns')" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Add</button>
