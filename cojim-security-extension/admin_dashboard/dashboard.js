@@ -1,4 +1,43 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg",
+  authDomain: "cojim-social-media-security-e.firebaseapp.com",
+  projectId: "cojim-social-media-security-e"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    const userEmail = user.email;
+    console.log("✅ Signed in as:", userEmail);
+
+    // Fetch authorized admin list from Firestore
+    const docRef = doc(getFirestore(app), "remoteConfig", "global");
+    const docSnap = await getDoc(docRef);
+    const admins = docSnap.data().adminEmails || [];
+
+    if (!admins.includes(userEmail)) {
+      alert("Access denied. You are not an authorized admin.");
+      document.body.innerHTML = '<h2 class="text-red-600 text-xl p-4">🚫 Unauthorized</h2>';
+    } else {
+      console.log("🔓 Access granted to admin dashboard.");
+      // Proceed with rest of logic
+      startLogsListener(); // if you have a function to start Firestore listeners
+    }
+
+  } else {
+    // If not logged in, trigger sign-in popup
+    console.log("🔐 Not signed in. Prompting...");
+    await signInWithPopup(auth, provider);
+  }
+});
+
 import {
   getFirestore,
   collection,
