@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "admin_panel",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
