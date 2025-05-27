@@ -1,0 +1,17 @@
+/* style.css – COJIM Admin Custom Styling */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f3f4f6; /* Tailwind gray-100 */
+  color: #1f2937; /* Tailwind gray-800 */
+}
+
+h1, h2, h3 {
+  color: #1e40af; /* Tailwind blue-800 */
+}
+
+button {
+  transition: all 0.2s ease-in-out;
+}
+button:hover {
+  transform: scale(1.03);
+}
