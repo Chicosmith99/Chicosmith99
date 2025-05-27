@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>COJIM Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 p-6 font-sans">
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-blue-700">COJIM Admin Dashboard</h1>
+    <p class="text-sm text-gray-600">Manage flagged content and moderation tools.</p>
+  </header>
+
+  <!-- Logs -->
+  <section class="mb-8">
+    <h2 class="text-xl font-semibold mb-3">📛 Flagged Comments (Live)</h2>
+    <div id="logs-container" class="space-y-4 max-h-[400px] overflow-y-auto bg-white p-4 border rounded shadow">
+      <p class="text-gray-500">⏳ Loading from Firestore...</p>
+    </div>
+  </section>
+
+  <!-- Export CSV -->
+  <div class="text-right">
+    <button id="exportCsvBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+      📤 Export Logs to CSV
+    </button>
+  </div>
+
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>
