@@ -4,31 +4,47 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>COJIM Admin Login</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white shadow-md rounded px-8 py-6 w-full max-w-md">
-    <h2 class="text-2xl font-bold text-center mb-4 text-blue-800">COJIM Admin Login</h2>
+<body>
+  <h2>COJIM Admin Login</h2>
+  <input id="email" type="email" placeholder="Email" /><br />
+  <input id="password" type="password" placeholder="Password" /><br />
+  <button onclick="login()">Login</button>
 
-    <div class="mb-4">
-      <label for="email" class="block text-sm font-semibold text-gray-700">Email</label>
-      <input id="email" type="email" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm" />
-    </div>
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg",
+      authDomain: "cojim-social-media-security-e.firebaseapp.com",
+      projectId: "cojim-social-media-security-e"
+    };
 
-    <div class="mb-4">
-      <label for="password" class="block text-sm font-semibold text-gray-700">Password</label>
-      <input id="password" type="password" class="mt-1 block w-full px-3 py-2 border rounded shadow-sm" />
-    </div>
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    <div class="mb-4">
-      <button id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Sign In
-      </button>
-    </div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-    <p id="errorMsg" class="text-sm text-red-600 text-center hidden"></p>
-  </div>
+    window.login = async function () {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-  <script type="module" src="/auth.js"></script>
+      const allowedEmails = ["chicoajsmith@gmail.com", "christopherorjiministries@gmail.com"];
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        if (!allowedEmails.includes(user.email)) {
+          alert("Access Denied: Not an authorized admin.");
+        } else {
+          window.location.href = "dashboard.html";
+        }
+      } catch (error) {
+        alert("Login failed: " + error.message);
+      }
+    }
+  </script>
 </body>
 </html>
