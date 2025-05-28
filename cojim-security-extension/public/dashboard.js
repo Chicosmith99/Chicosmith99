@@ -91,3 +91,25 @@ document.getElementById("exportCsvBtn")?.addEventListener("click", async () => {
   a.click();
   URL.revokeObjectURL(url);
 });
+// 🌒 Dark Mode Toggle Logic
+const toggle = document.getElementById("darkModeToggle");
+const html = document.documentElement;
+
+// Apply saved preference on load
+if (localStorage.getItem("theme") === "dark") {
+  html.classList.add("dark");
+  if (toggle) toggle.checked = true;
+}
+
+// Watch toggle interaction
+if (toggle) {
+  toggle.addEventListener("change", () => {
+    if (toggle.checked) {
+      html.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      html.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  });
+}

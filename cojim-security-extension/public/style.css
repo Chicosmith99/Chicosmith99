@@ -1,4 +1,6 @@
-/* style.css – COJIM Admin Custom Styling */
+/* style.css – COJIM Admin Custom Styling with Dark Mode Support */
+
+/* Default (Light Mode) */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f3f4f6; /* Tailwind gray-100 */
@@ -14,4 +16,42 @@ button {
 }
 button:hover {
   transform: scale(1.03);
+}
+
+/* Dark Mode Overrides */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #111827; /* Tailwind gray-900 */
+    color: #f3f4f6; /* Tailwind gray-100 */
+  }
+
+  h1, h2, h3 {
+    color: #93c5fd; /* Tailwind blue-300 */
+  }
+
+  button {
+    background-color: #2563eb; /* Tailwind blue-600 */
+    color: #fff;
+  }
+
+  button:hover {
+    background-color: #1d4ed8; /* Tailwind blue-700 */
+  }
+
+  #logs-container {
+    background-color: #1f2937; /* Tailwind gray-800 */
+    color: #e5e7eb; /* Tailwind gray-200 */
+  }
+
+  .bg-white {
+    background-color: #1f2937 !important;
+  }
+
+  .text-gray-800, .text-gray-700, .text-gray-600 {
+    color: #d1d5db !important; /* Tailwind gray-300 */
+  }
+
+  .border-gray-300 {
+    border-color: #374151 !important; /* Tailwind gray-700 */
+  }
 }
