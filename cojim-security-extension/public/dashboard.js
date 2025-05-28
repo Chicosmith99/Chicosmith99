@@ -1,3 +1,21 @@
+// 🌒 Dark Mode Persistence
+const darkToggle = document.getElementById("darkModeToggle");
+
+if (localStorage.getItem("theme") === "dark") {
+  document.documentElement.classList.add("dark");
+  darkToggle.checked = true;
+}
+
+darkToggle?.addEventListener("change", () => {
+  if (darkToggle.checked) {
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }
+});
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore,
