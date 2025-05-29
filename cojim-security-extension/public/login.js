@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// 🔧 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyBpFdVyshiqKem_8sPF-yNhpSetNbd6Qkg",
   authDomain: "cojim-social-media-security-e.firebaseapp.com",
@@ -11,10 +10,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// ✅ Whitelisted admin emails
+// Approved admin emails
 const allowedEmails = ["chicoajsmith@gmail.com", "christopherorjiministries@gmail.com"];
 
-// 🚪 Login Handler
 document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -36,12 +34,11 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   }
 });
 
-// 👁️ Toggle password visibility
+// 👁️ Show/hide password toggle
 document.getElementById("togglePassword").addEventListener("click", () => {
   const pwInput = document.getElementById("password");
-  const isHidden = pwInput.type === "password";
-  pwInput.type = isHidden ? "text" : "password";
+  const isHidden = pwInput.getAttribute("type") === "password";
+  pwInput.setAttribute("type", isHidden ? "text" : "password");
 
-  // Optionally change button icon/text
   document.getElementById("togglePassword").textContent = isHidden ? "🙈" : "👁️";
 });
