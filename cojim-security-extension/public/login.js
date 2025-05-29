@@ -10,7 +10,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Approved admin emails
+// Whitelisted admins
 const allowedEmails = ["chicoajsmith@gmail.com", "christopherorjiministries@gmail.com"];
 
 document.getElementById("loginBtn").addEventListener("click", async () => {
@@ -32,13 +32,4 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     errorEl.textContent = err.message;
     errorEl.classList.remove("hidden");
   }
-});
-
-// 👁️ Show/hide password toggle
-document.getElementById("togglePassword").addEventListener("click", () => {
-  const pwInput = document.getElementById("password");
-  const isHidden = pwInput.getAttribute("type") === "password";
-  pwInput.setAttribute("type", isHidden ? "text" : "password");
-
-  document.getElementById("togglePassword").textContent = isHidden ? "🙈" : "👁️";
 });
