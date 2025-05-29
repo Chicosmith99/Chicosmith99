@@ -1,21 +1,21 @@
-// 🌒 Dark Mode Persistence
+// 🌒 Dark Mode Toggle & Persistence
+const html = document.documentElement;
 const darkToggle = document.getElementById("darkModeToggle");
 
+// Load user preference
 if (localStorage.getItem("theme") === "dark") {
-  document.documentElement.classList.add("dark");
-  darkToggle.checked = true;
+  html.classList.add("dark");
+  if (darkToggle) darkToggle.checked = true;
 }
 
+// Save preference on toggle
 darkToggle?.addEventListener("change", () => {
-  if (darkToggle.checked) {
-    document.documentElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-    localStorage.setItem("theme", "light");
-  }
+  const enableDark = darkToggle.checked;
+  html.classList.toggle("dark", enableDark);
+  localStorage.setItem("theme", enableDark ? "dark" : "light");
 });
 
+// 📦 Firebase Initialization
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore,
@@ -35,16 +35,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// 🧠 Render Log Entry
 const logsContainer = document.getElementById("logs-container");
 
 function renderLogEntry(data) {
   const card = document.createElement("div");
-  card.className = "bg-gray-100 p-3 rounded border shadow";
+  card.className = "bg-gray-100 dark:bg-gray-800 p-3 rounded border shadow";
 
   const riskColor = data.highRisk
     ? 'text-red-600'
     : data.sentiment === 'negative'
-    ? 'text-yellow-600'
+    ? 'text-yellow-500'
     : 'text-green-600';
 
   card.innerHTML = `
@@ -57,7 +58,7 @@ function renderLogEntry(data) {
   logsContainer.appendChild(card);
 }
 
-// Listen in real-time
+// 🔁 Realtime Firestore Listener
 function startLogsListener() {
   const q = query(collection(db, "flaggedLogs"), orderBy("timestamp", "desc"));
   onSnapshot(q, (snapshot) => {
@@ -67,10 +68,11 @@ function startLogsListener() {
 }
 startLogsListener();
 
-// Export CSV
+// 📤 CSV Export Logic
 document.getElementById("exportCsvBtn")?.addEventListener("click", async () => {
   const snapshot = await getDocs(collection(db, "flaggedLogs"));
   const rows = [["Text", "Translated", "Sentiment", "Platform", "Timestamp", "High Risk"]];
+
   snapshot.forEach(doc => {
     const d = doc.data();
     rows.push([
@@ -82,6 +84,7 @@ document.getElementById("exportCsvBtn")?.addEventListener("click", async () => {
       d.highRisk ? "YES" : "NO"
     ]);
   });
+
   const csvContent = rows.map(r => r.join(",")).join("\n");
   const blob = new Blob([csvContent], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
@@ -91,25 +94,3 @@ document.getElementById("exportCsvBtn")?.addEventListener("click", async () => {
   a.click();
   URL.revokeObjectURL(url);
 });
-// 🌒 Dark Mode Toggle Logic
-const toggle = document.getElementById("darkModeToggle");
-const html = document.documentElement;
-
-// Apply saved preference on load
-if (localStorage.getItem("theme") === "dark") {
-  html.classList.add("dark");
-  if (toggle) toggle.checked = true;
-}
-
-// Watch toggle interaction
-if (toggle) {
-  toggle.addEventListener("change", () => {
-    if (toggle.checked) {
-      html.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      html.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  });
-}
