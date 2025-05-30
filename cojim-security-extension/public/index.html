@@ -2,38 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>COJIM Admin Login</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Tailwind Test</title>
+  <link href="../dist/output.css" rel="stylesheet" />
 </head>
-<body class="bg-gray-100 h-screen flex items-center justify-center">
-  <div class="bg-white p-6 rounded shadow-md w-full max-w-sm">
-    <h1 class="text-2xl font-bold text-center text-blue-800 mb-4">COJIM Admin Login</h1>
-
-    <input id="email" type="email" placeholder="Email" class="w-full border px-3 py-2 mb-3 rounded" />
-
-    <div class="relative mb-3">
-  <input id="password" type="password" placeholder="Password"
-         class="w-full border px-3 py-2 rounded pr-10" />
-  <button id="togglePassword" type="button"
-          class="absolute right-2 top-2 text-gray-600 hover:text-gray-900">
-    <!-- Default icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-         viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M2.458 12C3.732 7.943 7.5 5 12 5c4.5 0 8.343 2.943 9.6 7-1.257 4.057-5.1 7-9.6 7-4.5 0-8.343-2.943-9.6-7z" />
-    </svg>
-  </button>
-</div>
-
-    <button id="loginBtn" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-2">Login</button>
-    <p id="error" class="text-red-600 mt-2 text-sm text-center hidden"></p>
+<body>
+  <div class="bg-blue-500 text-white p-4">
+    Hello!
   </div>
-
-  <script type="module" src="login.js"></script>
 </body>
 </html>
