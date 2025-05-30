@@ -4,9 +4,10 @@
   "description": "COJIM Social Media Security Extension",
   "main": "background.js",
   "scripts": {
+    "dev": "npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
+    "build": "npx tailwindcss -i ./src/input.css -o ./dist/output.css --minify",
     "test": "jest",
-    "tailwind:init": "npx tailwindcss init -p",
-    "build:css": "npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
+    "tailwind:init": "npx tailwindcss init -p"
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",
