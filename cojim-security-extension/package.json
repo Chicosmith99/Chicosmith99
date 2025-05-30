@@ -5,8 +5,8 @@
   "main": "background.js",
   "scripts": {
     "test": "jest",
-    "tailwind:init": "tailwindcss init -p",
-    "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
+    "tailwind:init": "npx tailwindcss init -p",
+    "build:css": "npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
