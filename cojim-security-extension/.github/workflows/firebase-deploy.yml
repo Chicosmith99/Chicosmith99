@@ -26,7 +26,7 @@ jobs:
 
       - name: Deploy to Firebase Hosting
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_TOKEN: 1//03Vx2_f-H_uyRCgYIARAAGAMSNwF-L9IrJZg4E2kVYYvoB0aMbT92l8xWFJn4f5Xiu2zaEDJL_71_bQd0I6sm1_Owgbpc-aF3w3I
         run: |
           if [ -z "$FIREBASE_TOKEN" ]; then
             echo "FIREBASE_TOKEN is not set. Please add it to your repository secrets."
