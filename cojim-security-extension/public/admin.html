@@ -6,16 +6,13 @@
   <title>COJIM Admin Console</title>
   <link rel="icon" href="favicon.ico" />
   
-  <!-- Tailwind CSS via CDN -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Optional: Enable dark mode class strategy
-    tailwind.config = {
-      darkMode: 'class',
-    };
+    tailwind.config = { darkMode: 'class' };
   </script>
 </head>
-<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white p-6 font-sans">
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white p-6 font-sans transition-colors duration-300">
 
   <header class="mb-8 flex justify-between items-center">
     <div>
@@ -27,8 +24,8 @@
 
     <!-- 🌒 Dark Mode Toggle -->
     <div class="flex items-center space-x-2">
-      <input type="checkbox" id="darkModeToggle" class="h-5 w-5" />
-      <label for="darkModeToggle" class="text-sm">Dark Mode</label>
+      <input type="checkbox" id="darkModeToggle" class="h-5 w-5 cursor-pointer" />
+      <label for="darkModeToggle" class="text-sm cursor-pointer">Dark Mode</label>
     </div>
   </header>
 
@@ -62,27 +59,14 @@
     </div>
   </section>
 
+  <!-- Export CSV Button -->
+  <div class="flex justify-end">
+    <button id="exportCsvBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+      📤 Export CSV
+    </button>
+  </div>
+
+  <!-- Scripts -->
   <script type="module" src="dashboard.js"></script>
-  <script>
-    // Persistent dark mode toggle
-    const toggle = document.getElementById('darkModeToggle');
-    const html = document.documentElement;
-
-    // Initialize from localStorage
-    if (localStorage.getItem('theme') === 'dark') {
-      html.classList.add('dark');
-      toggle.checked = true;
-    }
-
-    toggle.addEventListener('change', () => {
-      if (toggle.checked) {
-        html.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        html.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
-    });
-  </script>
 </body>
 </html>
