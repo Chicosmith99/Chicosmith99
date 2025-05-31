@@ -8,5 +8,5 @@
     "javascript": "javascript",
     "css": "css"
   },
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": null
 }
