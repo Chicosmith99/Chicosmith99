@@ -2,13 +2,13 @@
 const html = document.documentElement;
 const darkToggle = document.getElementById("darkModeToggle");
 
-// Load user preference
+// Load preference
 if (localStorage.getItem("theme") === "dark") {
   html.classList.add("dark");
   if (darkToggle) darkToggle.checked = true;
 }
 
-// Save preference on toggle
+// Save preference
 darkToggle?.addEventListener("change", () => {
   const enableDark = darkToggle.checked;
   html.classList.toggle("dark", enableDark);
@@ -43,10 +43,10 @@ function renderLogEntry(data) {
   card.className = "bg-gray-100 dark:bg-gray-800 p-3 rounded border shadow";
 
   const riskColor = data.highRisk
-    ? 'text-red-600'
+    ? 'text-red-600 dark:text-red-400'
     : data.sentiment === 'negative'
-    ? 'text-yellow-500'
-    : 'text-green-600';
+    ? 'text-yellow-500 dark:text-yellow-400'
+    : 'text-green-600 dark:text-green-400';
 
   card.innerHTML = `
     <p><strong>Platform:</strong> ${data.platform || 'Unknown'}</p>
@@ -58,7 +58,7 @@ function renderLogEntry(data) {
   logsContainer.appendChild(card);
 }
 
-// 🔁 Realtime Firestore Listener
+// 🔁 Realtime Listener
 function startLogsListener() {
   const q = query(collection(db, "flaggedLogs"), orderBy("timestamp", "desc"));
   onSnapshot(q, (snapshot) => {
@@ -68,7 +68,7 @@ function startLogsListener() {
 }
 startLogsListener();
 
-// 📤 CSV Export Logic
+// 📤 CSV Export
 document.getElementById("exportCsvBtn")?.addEventListener("click", async () => {
   const snapshot = await getDocs(collection(db, "flaggedLogs"));
   const rows = [["Text", "Translated", "Sentiment", "Platform", "Timestamp", "High Risk"]];
