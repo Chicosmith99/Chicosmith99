@@ -1,19 +1,28 @@
 <!DOCTYPE html>
-<html lang="en" class="">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>COJIM Admin Console</title>
   <link rel="icon" href="favicon.ico" />
-  <link rel="stylesheet" href="style.css" />
+  
+  <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Optional: Enable dark mode class strategy
+    tailwind.config = {
+      darkMode: 'class',
+    };
+  </script>
 </head>
 <body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white p-6 font-sans">
 
   <header class="mb-8 flex justify-between items-center">
     <div>
       <h1 class="text-3xl font-extrabold text-blue-800 dark:text-blue-300">COJIM Admin Console</h1>
-      <p class="text-sm text-gray-600 dark:text-gray-300">Monitor flagged content, manage rules & review reports in real-time.</p>
+      <p class="text-sm text-gray-600 dark:text-gray-300">
+        Monitor flagged content, manage rules & review reports in real-time.
+      </p>
     </div>
 
     <!-- 🌒 Dark Mode Toggle -->
@@ -28,19 +37,52 @@
     <h2 class="text-xl font-semibold mb-2">📧 Admin Emails</h2>
     <ul id="adminEmails" class="space-y-1 mb-2"></ul>
     <div class="flex">
-      <input id="newAdminEmail" placeholder="Add email..." class="flex-1 border px-2 py-1 rounded mr-2 dark:bg-gray-800 dark:border-gray-600" />
-      <button onclick="addField('adminEmails')" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Add</button>
+      <input
+        id="newAdminEmail"
+        placeholder="Add email..."
+        class="flex-1 border px-2 py-1 rounded mr-2 dark:bg-gray-800 dark:border-gray-600"
+      />
+      <button
+        onclick="addField('adminEmails')"
+        class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+      >
+        Add
+      </button>
     </div>
   </section>
 
   <!-- Flagged Logs -->
   <section class="mb-6">
     <h2 class="text-xl font-semibold mb-2">📛 Flagged Logs (Live)</h2>
-    <div id="logs-container" class="space-y-4 overflow-auto max-h-[400px] border rounded p-3 bg-white dark:bg-gray-800 dark:border-gray-600 shadow">
+    <div
+      id="logs-container"
+      class="space-y-4 overflow-auto max-h-[400px] border rounded p-3 bg-white dark:bg-gray-800 dark:border-gray-600 shadow"
+    >
       <p class="text-gray-500 dark:text-gray-300">Loading flagged logs...</p>
     </div>
   </section>
 
   <script type="module" src="dashboard.js"></script>
+  <script>
+    // Persistent dark mode toggle
+    const toggle = document.getElementById('darkModeToggle');
+    const html = document.documentElement;
+
+    // Initialize from localStorage
+    if (localStorage.getItem('theme') === 'dark') {
+      html.classList.add('dark');
+      toggle.checked = true;
+    }
+
+    toggle.addEventListener('change', () => {
+      if (toggle.checked) {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+  </script>
 </body>
 </html>
