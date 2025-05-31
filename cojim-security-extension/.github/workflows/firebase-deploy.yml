@@ -28,7 +28,7 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          if [ -z "${FIREBASE_TOKEN}" ]; then
+          if [ -z "$FIREBASE_TOKEN" ]; then
             echo "FIREBASE_TOKEN is not set. Please add it to your repository secrets."
             exit 1
           fi
