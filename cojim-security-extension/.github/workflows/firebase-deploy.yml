@@ -1,0 +1,35 @@
+name: Firebase Deploy
+
+on:
+  push:
+    branches:
+      - main  # or your deployment branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy to Firebase Hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          if [ -z "${FIREBASE_TOKEN}" ]; then
+            echo "FIREBASE_TOKEN is not set. Please add it to your repository secrets."
+            exit 1
+          fi
+          firebase deploy --only hosting --project cojim-social-media-security-e
