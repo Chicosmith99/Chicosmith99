@@ -1,0 +1,12 @@
+{
+  "name": "cojim-tailwind-template",
+  "version": "1.0.0",
+  "scripts": {
+    "watch": "node node_modules/tailwindcss/lib/cli.js -i ./public/src/input.css -o ./public/dist/output.css --watch"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^4.1.8"
+  }
+}
