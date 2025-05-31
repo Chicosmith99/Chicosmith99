@@ -4,9 +4,9 @@
   "description": "**Version:** 3.0.0  \r **Purpose:** Internal-use Firefox and Chrome Extension for securing COJIM’s official social media accounts with automated comment moderation, live stream detection, keyword surveillance, and real-time alerts.",
   "main": "background.js",
   "scripts": {
-  "test": "echo \"Error: no test specified\" && exit 1",
-  "build": ".\\node_modules\\.bin\\tailwindcss.cmd -i ./public/src/input.css -o ./public/dist/output.css --watch"
-},
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": ".\\node_modules\\.bin\\tailwindcss.cmd -i ./public/src/input.css -o ./public/dist/output.css --watch"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
