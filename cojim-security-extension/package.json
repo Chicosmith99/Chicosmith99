@@ -1,0 +1,12 @@
+{
+  "name": "cojim-security-extension",
+  "version": "1.0.0",
+  "description": "**Version:** 3.0.0  \r **Purpose:** Internal-use Firefox and Chrome Extension for securing COJIM’s official social media accounts with automated comment moderation, live stream detection, keyword surveillance, and real-time alerts.",
+  "main": "background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
