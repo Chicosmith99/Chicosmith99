@@ -1,0 +1,15 @@
+1//03Vx2_f-H_uyRCgYIARAAGAMSNwF-L9IrJZg4E2kVYYvoB0aMbT92l8xWFJn4f5Xiu2zaEDJL_71_bQd0I6sm1_Owgbpc-aF3w3I
+
+SHA256:h4TsYCW0DzqJbgsUYyK38Kzh+B1UFvJKXbLvvKZrWas chicoajsmith@gmail.com
+The key's randomart image is:
++--[ED25519 256]--+
+|   .+ + .        |
+|     O *         |
+|++. * O .        |
+|+*o* O o .       |
+|o.B o o S .      |
+|=o o   o..       |
+|++  .  oo.       |
+|o... .o o.       |
+| .. ..E=.        |
++----[SHA256]-----+
